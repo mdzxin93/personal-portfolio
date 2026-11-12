@@ -317,9 +317,8 @@ const Projects = () => {
     <>
       <section id="projects-section" ref={sectionRef}>
         <div className="pj-head">
-          <span className="pj-label">ASPIRE DIGITAL SOLUTIONS · WEBSITE PORTFOLIO PROJECT</span>
-          <h2 className="pj-title">Selected Work</h2>
-          <p className="pj-intro">A selection of 10 websites delivered for real clients across different industries.</p>
+          <span className="pj-label">Selected Work</span>
+          <p className="pj-intro">A selection of websites delivered for real clients across different industries.</p>
         </div>
 
         <ul className="pj-list">
