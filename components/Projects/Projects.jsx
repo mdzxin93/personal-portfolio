@@ -103,7 +103,7 @@ const VENTURES = [
     name: "AutoEditor",
     role: "AI Video Editing · Reference-Driven Workflows",
     href: "https://github.com/mdzxin93/autoeditor",
-    kind: "05 / AI VIDEO PRODUCTION",
+    kind: "AI VIDEO PRODUCTION",
     note: "Turns raw footage and a reference video into styled edits with cuts, zooms, captions, B-roll, and storyboards.",
     image: "/images/projects/autoeditor-project.png",
   },
@@ -111,9 +111,17 @@ const VENTURES = [
     name: "Titan Watches Voice Analysis",
     role: "WhatsApp Business · Voice AI",
     href: "https://github.com/mdzxin93/titan-watches-voice-analysis",
-    kind: "06 / BUSINESS AUTOMATION",
+    kind: "BUSINESS AUTOMATION",
     note: "A local watch-store workspace with a product storefront, customer inbox, order tracking, and Whisper-powered voice-note transcription.",
     image: "/images/projects/titan-watches-voice-analysis.png",
+  },
+  {
+    name: "CloudNAS",
+    role: "Full-Stack Cloud Storage · File Sharing",
+    href: "https://github.com/mdzxin93/CloudNAS",
+    kind: "CLOUD STORAGE PLATFORM",
+    note: "A full-stack cloud storage workspace with file management, secure account access, and cross-device clipboard sharing.",
+    image: "/images/projects/cloudnas-project.png",
   },
 ];
 
@@ -153,7 +161,7 @@ const SolutionsAccordion = ({ items }) => {
             <img className="solution-panel__image" src={item.image} alt="" aria-hidden="true" />
             <span className="solution-panel__shade" aria-hidden="true" />
             <span className="solution-panel__topline">
-              <span>{item.kind}</span>
+              <span>{String(index + 1).padStart(2, "0")} / {item.kind}</span>
               <span className="solution-panel__index">{String(index + 1).padStart(2, "0")}</span>
             </span>
             <span className="solution-panel__content">
@@ -317,7 +325,7 @@ const Projects = () => {
     <>
       <section id="projects-section" ref={sectionRef}>
         <div className="pj-head">
-          <span className="pj-label">Selected Work</span>
+          <h2 className="pj-section-heading">Selected Work</h2>
           <p className="pj-intro">A selection of websites delivered for real clients across different industries.</p>
         </div>
 

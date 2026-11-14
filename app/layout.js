@@ -16,7 +16,8 @@ export const metadata = {
   title: 'Mohammed Zain J | Full-Stack Developer & AI Enthusiast',
   description: 'Mohammed Zain J is a Full-Stack Developer and AI & Information Science Enthusiast based in Mysuru, Karnataka, specializing in scalable web apps, MERN stack, Gemini API, and technical SEO.',
   icons: {
-    icon: '/icon.png',
+    icon: '/about-portrait.png',
+    shortcut: '/about-portrait.png',
   },
 }
 

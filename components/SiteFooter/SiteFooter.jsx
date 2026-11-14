@@ -123,13 +123,6 @@ const SiteFooter = () => {
             <a href="https://www.instagram.com/the_mohxmmed_zxin17/" target="_blank" rel="noreferrer">Instagram</a>
             <a href="https://wa.me/917975788275" target="_blank" rel="noreferrer">WhatsApp</a>
           </div>
-          <div className="f-col">
-            <h3>EXPLORE</h3>
-            <a href="https://nomoredms.vercel.app/" target="_blank" rel="noreferrer">NoMoreDMS</a>
-            <a href="https://educalc-expert0509.vercel.app/" target="_blank" rel="noreferrer">EduCalc</a>
-            <a href="https://postlearn-lake.vercel.app/" target="_blank" rel="noreferrer">PostLearn</a>
-            <a href="#contact-section">Get in touch</a>
-          </div>
         </div>
       </div>
       <div className="footer-bottom">

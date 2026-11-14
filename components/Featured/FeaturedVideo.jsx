@@ -31,11 +31,12 @@ const FeaturedVideo = ({refForward, ...props }) => {
       {...props}
     >
       <Image
-        src="/hero-image.png"
-        alt="Mohammed Zain J portrait"
+        src="/about-portrait.png"
+        alt="Mohammed Zain portrait"
         fill
         priority
-        sizes="(max-width: 768px) 80vw, 40vw"
+        unoptimized
+        sizes="(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 856px"
         className="object-cover object-top"
       />
     </motion.div>

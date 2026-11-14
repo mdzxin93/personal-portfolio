@@ -1946,3 +1946,394 @@ html {
 .solution-panel:not(.solution-panel--active) .solution-panel__expand {
   display: none;
 }
+
+/* ABOUT DISPLAY HEADING — desktop composition retained, mobile rows
+   are centered and sized to the available viewport without animation drift. */
+.about-display-heading {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  margin: 0;
+  padding: 0 0 0 1.5rem;
+  color: var(--color-text);
+  font-family: var(--font-inter), "Inter", sans-serif;
+  font-size: 9rem;
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.07em;
+  text-align: left;
+}
+
+.about-display-heading__line {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  width: 100%;
+  white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+  .about-display-heading {
+    font-size: clamp(4.5rem, 10vw, 7rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .about-display-heading {
+    width: 100%;
+    padding: 0 12px;
+    font-size: clamp(2rem, 9.4vw, 3.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.075em;
+    text-align: center;
+    overflow: visible;
+  }
+
+  .about-display-heading__line {
+    justify-content: center;
+    width: 100%;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 360px) {
+  .about-display-heading {
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: clamp(1.85rem, 9.1vw, 2.45rem);
+    letter-spacing: -0.08em;
+  }
+}
+
+
+/* ── MOBILE SELECTED WORK — compact editorial project rows ── */
+@media (max-width: 600px) {
+  #projects-section {
+    padding: 16vw 5vw 14vw;
+  }
+
+  #projects-section .pj-head {
+    padding-bottom: 5vw;
+    margin-bottom: 1vw;
+  }
+
+  #projects-section .pj-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+  }
+
+  #projects-section .pj-intro {
+    max-width: 34ch;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  #projects-section .pj-row {
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 78%, transparent);
+  }
+
+  #projects-section .pj-link {
+    display: grid;
+    grid-template-columns: 22px minmax(68px, 0.72fr) minmax(0, 1.55fr) 28px;
+    align-items: center;
+    column-gap: 9px;
+    padding: 18px 0;
+    min-height: 0;
+    width: 100%;
+  }
+
+  #projects-section .pj-num {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    align-self: center;
+  }
+
+  #projects-section .project-preview,
+  #projects-section .project-preview-placeholder {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    height: clamp(58px, 18vw, 76px);
+    min-width: 0;
+    object-fit: cover;
+    object-position: top center;
+    border-radius: 9px;
+    border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.09);
+  }
+
+  #projects-section .pj-meta {
+    grid-column: 3;
+    grid-row: 1;
+    min-width: 0;
+    gap: 5px;
+  }
+
+  #projects-section .pj-name {
+    font-size: clamp(21px, 6.2vw, 25px);
+    line-height: 1.02;
+    letter-spacing: -0.055em;
+    font-weight: 550;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+    text-wrap: balance;
+  }
+
+  #projects-section .pj-role {
+    font-size: 9px;
+    line-height: 1.45;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    opacity: 0.58;
+    overflow-wrap: anywhere;
+  }
+
+  #projects-section .pj-note {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+    opacity: 0.72;
+  }
+
+  #projects-section .pj-kind {
+    display: none;
+  }
+
+  #projects-section .pj-arrow {
+    grid-column: 4;
+    grid-row: 1;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  #projects-section .pj-arrow svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  #projects-section .pj-link:hover {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 370px) {
+  #projects-section .pj-link {
+    grid-template-columns: 20px minmax(64px, 0.68fr) minmax(0, 1.6fr) 26px;
+    column-gap: 7px;
+    padding: 16px 0;
+  }
+
+  #projects-section .pj-name {
+    font-size: clamp(20px, 6vw, 23px);
+  }
+
+  #projects-section .pj-role {
+    font-size: 8px;
+    letter-spacing: 0.13em;
+  }
+
+  #projects-section .pj-arrow {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+
+/* Mobile navigation stability: keep the top identity bar clear and reserve
+   room for the fixed bottom action dock. */
+@media (max-width: 1023px) {
+  body {
+    padding-bottom: calc(78px + env(safe-area-inset-bottom));
+  }
+
+  .mobile-top-nav {
+    min-height: calc(56px + env(safe-area-inset-top));
+    box-sizing: border-box;
+    overflow: visible !important;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .mobile-top-nav > div {
+    min-height: 36px;
+  }
+
+  .mobile-top-nav img {
+    flex: 0 0 32px;
+  }
+
+  .mobile-top-nav .nav_btn_sm {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    background: var(--color-bg);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .mobile-action-dock {
+    min-height: 66px;
+    box-sizing: content-box;
+    padding-bottom: max(0.55rem, env(safe-area-inset-bottom));
+  }
+
+  html {
+    scroll-padding-top: calc(68px + env(safe-area-inset-top));
+    scroll-padding-bottom: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    padding-bottom: 0;
+  }
+}
+
+/* Restore full-height mobile layout after removing the fixed action dock. */
+@media (max-width: 1023px) {
+  body { padding-bottom: 0 !important; }
+  html { scroll-padding-bottom: 0 !important; }
+}
+
+
+/* Selected Work — clear section-level heading with responsive sizing */
+#projects-section .pj-section-heading {
+  margin: 0;
+  min-width: 0;
+  color: var(--color-text);
+  font-size: clamp(2.6rem, 5.2vw, 5.6rem);
+  font-weight: 600;
+  line-height: 0.96;
+  letter-spacing: -0.075em;
+  text-transform: none;
+}
+
+#projects-section .pj-head {
+  align-items: flex-end;
+  gap: clamp(16px, 3vw, 44px);
+}
+
+#projects-section .pj-intro {
+  max-width: 34ch;
+  margin: 0 0 0.25rem;
+  font-size: clamp(0.9rem, 1.05vw, 1.05rem);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  #projects-section .pj-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 18px;
+    margin-bottom: 8px;
+  }
+
+  #projects-section .pj-section-heading {
+    width: 100%;
+    font-size: clamp(2.35rem, 10vw, 3.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.07em;
+  }
+
+  #projects-section .pj-intro {
+    max-width: 38ch;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 380px) {
+  #projects-section .pj-section-heading {
+    font-size: clamp(2.1rem, 9.5vw, 2.6rem);
+  }
+
+  #projects-section .pj-intro {
+    font-size: 13px;
+  }
+}
+
+/* Contact layout refinement — mobile only */
+@media (max-width: 768px) {
+  #contact-section {
+    align-items: flex-start;
+    text-align: left;
+    padding-left: 7vw;
+    padding-right: 7vw;
+    gap: 4vw;
+  }
+
+  #ct-eyebrow {
+    align-self: flex-start;
+    text-align: left;
+    white-space: normal;
+    font-size: clamp(11px, 2.8vw, 14px);
+    letter-spacing: 0.16em;
+  }
+
+  #ct-headline {
+    align-self: flex-start;
+    width: max-content;
+    max-width: 100%;
+    white-space: nowrap;
+    font-size: clamp(2.8rem, 14vw, 5.2rem);
+    line-height: 0.92;
+    letter-spacing: -0.075em;
+    margin: 1vw 0 3vw;
+  }
+
+  #ct-email {
+    align-self: flex-start;
+    max-width: 100%;
+    text-align: left;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    font-size: clamp(14px, 3.8vw, 18px);
+    margin-top: 2vw;
+  }
+
+  #ct-actions {
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    width: 100%;
+    gap: 1.5vw;
+    margin-top: 4vw;
+  }
+
+  #ct-actions .ct-btn,
+  #ct-actions .ct-btn-secondary {
+    align-self: flex-start;
+    justify-content: flex-start;
+    width: auto;
+    max-width: 100%;
+    min-height: 44px;
+    height: auto;
+    padding: 8px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--color-text);
+    font-size: clamp(14px, 3.8vw, 18px);
+    letter-spacing: -0.02em;
+    text-align: left;
+    white-space: normal;
+  }
+
+  #ct-actions .ct-btn svg,
+  #ct-actions .ct-btn-secondary svg {
+    width: 16px;
+    height: 16px;
+  }
+}

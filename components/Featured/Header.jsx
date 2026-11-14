@@ -1,30 +1,26 @@
-import { a, useSpring } from "@react-spring/web";
-import { Trail } from "./TrailText";
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React from "react";
+import { motion } from "framer-motion";
 
 const Header = () => {
-  const [open, set] = useState();
-
-  useEffect(() => {
-    set(true);
-  }, []);
-
-  const [horizontal, api] = useSpring(() => ({ from: { transform: 'translateX(0%)' } }));
-
-  const horizontalCallback = open => api.start({ transform: `translateX(${open ? '20%' : '0%'})` });
   return (
-    <div className="w-full z-10 relative px-4 md:px-0 md:pl-6 font-semibold text-5xl sm:text-6xl md:text-[9rem] text-center md:text-left leading-[0.95] md:leading-none" style={{ letterSpacing: "-0.07em" }}>
-      <Trail callback={horizontalCallback}>
-        <a.div className="flex justify-center md:justify-start flex-wrap md:flex-nowrap" style={horizontal}>
-          <div>Building&nbsp;</div>
-          <div>Real&nbsp;</div>
-        </a.div>
-        <div className="flex justify-center md:justify-start flex-wrap md:flex-nowrap">
-          <div>Digital&nbsp;</div>
-          <div>Systems&nbsp;</div>
-        </div>
-      </Trail>
-    </div>
+    <motion.h2
+      className="about-display-heading"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <span className="about-display-heading__line">
+        <span>Building&nbsp;</span>
+        <span>Real</span>
+      </span>
+      <span className="about-display-heading__line">
+        <span>Digital&nbsp;</span>
+        <span>Systems</span>
+      </span>
+    </motion.h2>
   );
 };
 

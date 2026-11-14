@@ -127,11 +127,14 @@ function Navbar() {
           top of every other layer — including the footer (z: 100000) and
           the GradualBlur overlay (z: 99999) — so the menu is always
           accessible and never clipped by another stacking context. */}
-      <div className={`fixed top-0 left-0 z-[100001] w-full lg:hidden px-5 transition-all duration-300 ${
-        isScrolled
-          ? "py-3 bg-bg/85 backdrop-blur-md border-b border-fg/10 shadow-sm"
-          : "py-5 bg-transparent"
-      }`}>
+      <div
+        className={`mobile-top-nav fixed top-0 inset-x-0 z-[2147483000] w-full lg:hidden px-5 pt-[calc(env(safe-area-inset-top)+0.75rem)] pb-3 transform-gpu transition-[background-color,box-shadow,border-color] duration-300 ${
+          isScrolled
+            ? "bg-bg/95 backdrop-blur-xl border-b border-fg/10 shadow-md"
+            : "bg-bg/75 backdrop-blur-lg border-b border-fg/5"
+        }`}
+        style={{ isolation: "isolate", WebkitTransform: "translate3d(0,0,0)" }}
+      >
         <div className="flex items-center justify-between w-full font-extrabold">
           <Link
             href="/"
@@ -140,7 +143,7 @@ function Navbar() {
             className="flex items-center gap-2.5 cursor-pointer hover:opacity-85 transition-opacity"
           >
             <img
-              src="/hero-image.png"
+              src="/about-portrait.png"
               alt="Mohammed Zain J"
               className="w-8 h-8 rounded-full object-cover object-top border border-fg/10"
             />
@@ -262,7 +265,7 @@ function Navbar() {
           <div className="flex items-center">
             <Link href="/" aria-label="Home" className="flex items-center gap-3 hover:opacity-85 transition-opacity">
               <img
-                src="/hero-image.png"
+                src="/about-portrait.png"
                 alt="Mohammed Zain J"
                 className="w-10 h-10 rounded-full object-cover object-top border border-fg/10"
               />
