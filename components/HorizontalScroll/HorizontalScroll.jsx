@@ -38,7 +38,10 @@ const HorizontalScroll = () => {
         if (!sticky || !text) return;
 
         context = gsap.context(() => {
-          const chars = text.querySelectorAll(".hs-char");
+          const words = text.querySelectorAll(".hs-word");
+
+          // Reset to the true beginning so the reveal always starts at “I”.
+          gsap.set(text, { x: 0 });
 
           const scrollTween = gsap.to(text, {
             xPercent: -110,
@@ -52,13 +55,15 @@ const HorizontalScroll = () => {
             },
           });
 
-          chars.forEach((char) => {
-            gsap.from(char, {
-              yPercent: gsap.utils.random(-200, 200),
-              rotation: gsap.utils.random(-20, 20),
+          // Reveal complete words in reading order: “I” is always first.
+          words.forEach((word) => {
+            gsap.from(word, {
+              yPercent: gsap.utils.random(-120, 120),
+              rotation: gsap.utils.random(-10, 10),
+              opacity: 0,
               ease: "back.out(1.2)",
               scrollTrigger: {
-                trigger: char,
+                trigger: word,
                 containerAnimation: scrollTween,
                 start: "left 100%",
                 end: "left 30%",
@@ -74,11 +79,11 @@ const HorizontalScroll = () => {
       }
     };
 
-    // Defer the headline animation until the complete “Evidence over empty
-    // numbers” section has passed the middle of the viewport. This keeps the
-    // headline from appearing or animating while the evidence cards are being read.
+    // Keep the headline hidden until the entire “Evidence over empty numbers”
+    // section has cleared the top edge of the viewport. It can enter only after
+    // the metrics section has fully moved out of view.
     const hasPassedReadingPoint = () =>
-      evidenceSection.getBoundingClientRect().bottom <= window.innerHeight * 0.5;
+      evidenceSection.getBoundingClientRect().bottom <= 0;
 
     if (hasPassedReadingPoint()) {
       initializeAnimation();
@@ -90,7 +95,7 @@ const HorizontalScroll = () => {
             initializeAnimation();
           }
         },
-        { rootMargin: "0px 0px -50% 0px", threshold: 0 }
+        { rootMargin: "0px", threshold: 0 }
       );
 
       gateObserver.observe(evidenceSection);

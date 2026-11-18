@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./TileReveal.css";
 
 const DEFAULT_VIDEOS = [
@@ -142,7 +140,6 @@ export default function TileReveal({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    gsap.registerPlugin(ScrollTrigger);
 
     const section = sectionRef.current;
     const sticky = stickyRef.current;
@@ -151,147 +148,105 @@ export default function TileReveal({
     const tiles = gridRef.current?.querySelectorAll(".tile");
     if (!tiles || tiles.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      const getW = () => window.innerWidth;
-      const getH = () => window.innerHeight;
+    // Keep mobile and reduced-motion experiences fully visible and static.
+    const useStaticReveal = window.matchMedia(
+      "(max-width: 768px), (prefers-reduced-motion: reduce)"
+    ).matches;
+    if (useStaticReveal) {
+      if (progressRef.current) progressRef.current.textContent = "100 / 100";
+      return;
+    }
 
-      // Trajectories for 6 tiles (col: 0, 1, 2; row: 0, 1)
-      const entranceMultipliers = [
-        { x: -0.65, y: -1.15 }, // top-left
-        { x: 0,     y: -1.15 }, // top-center
-        { x: 0.65,  y: -1.15 }, // top-right
-        { x: -0.65, y: 1.15 },  // bottom-left
-        { x: 0,     y: 1.15 },  // bottom-center
-        { x: 0.65,  y: 1.15 },  // bottom-right
-      ];
+    let cancelled = false;
+    let refreshTimer;
+    let ctx;
 
-      const exitMultipliers = [
-        { x: -1.6, y: -1.3 }, // top-left
-        { x: 0,    y: -1.3 }, // top-center
-        { x: 1.6,  y: -1.3 }, // top-right
-        { x: -1.6, y: 1.3 },  // bottom-left
-        { x: 0,    y: 1.3 },  // bottom-center
-        { x: 1.6,  y: 1.3 },  // bottom-right
-      ];
+    const loadScrollAnimation = async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      if (cancelled) return;
 
-      // Set initial off-screen states
-      tiles.forEach((tile, i) => {
-        const m = entranceMultipliers[i];
-        gsap.set(tile, {
-          x: () => m.x * getW(),
-          y: () => m.y * getH(),
-          scale: 0.85,
-          opacity: 0,
-        });
-      });
+      gsap.registerPlugin(ScrollTrigger);
+      ctx = gsap.context(() => {
+        const getW = () => window.innerWidth;
+        const getH = () => window.innerHeight;
+        const entranceMultipliers = [
+          { x: -0.65, y: -1.15 },
+          { x: 0, y: -1.15 },
+          { x: 0.65, y: -1.15 },
+          { x: -0.65, y: 1.15 },
+          { x: 0, y: 1.15 },
+          { x: 0.65, y: 1.15 },
+        ];
 
-      if (headlineRef.current) {
-        gsap.set(headlineRef.current, {
-          opacity: 0.35,
-          scale: 0.94,
-        });
-      }
-
-      // Master ScrollTrigger timeline pinned with pinSpacing: true
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () => `+=${Math.round(window.innerHeight * 2.8)}`,
-          pin: sticky,
-          pinSpacing: true,
-          scrub: 0.6,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            if (progressRef.current) {
-              const val = Math.round(self.progress * 100);
-              progressRef.current.textContent = `${String(val).padStart(2, "0")} / 100`;
-            }
-          },
-        },
-      });
-
-      // --- PHASE 1: ENTRANCE (timeline 0.00 -> 0.28) ---
-      // Tiles fly in from outside the screen to assemble the 3x2 grid
-      tiles.forEach((tile, i) => {
-        tl.to(
-          tile,
-          {
-            x: 0,
-            y: 0,
-            scale: 1,
-            opacity: 1,
-            ease: "power2.out",
-            duration: 0.28,
-          },
-          i * 0.015
-        );
-      });
-
-      if (headlineRef.current) {
-        tl.to(
-          headlineRef.current,
-          {
-            opacity: 1,
-            scale: 1,
-            ease: "power2.out",
-            duration: 0.28,
-          },
-          0
-        );
-      }
-
-      // --- PHASE 2: HOLD / FULLY LOADED & SETTLED STATE (timeline 0.28 -> 0.66) ---
-      // SECTION IS COMPLETELY LOADED ON SCROLLING:
-      // All 6 tiles and headline stay 100% visible, settled, and rock-solid
-      // while the user scrolls through this hold window.
-      tl.to({}, { duration: 0.38 });
-
-      // --- PHASE 3: EXIT BLAST (timeline 0.66 -> 0.93) ---
-      // Tiles scale up and blast outwards, clearing the screen
-      tiles.forEach((tile, i) => {
-        const m = exitMultipliers[i];
-        tl.to(
-          tile,
-          {
-            x: () => m.x * getW(),
-            y: () => m.y * getH(),
-            scale: 2.35,
+        tiles.forEach((tile, i) => {
+          const m = entranceMultipliers[i] || { x: 0, y: 0 };
+          gsap.set(tile, {
+            x: m.x * getW(),
+            y: m.y * getH(),
+            scale: 0.85,
             opacity: 0,
-            ease: "power2.in",
-            duration: 0.27,
+          });
+        });
+
+        if (headlineRef.current) {
+          gsap.set(headlineRef.current, { opacity: 0.35, scale: 0.94 });
+        }
+
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top 70%",
+            once: true,
           },
-          0.66 + i * 0.01
-        );
-      });
-
-      if (headlineRef.current) {
-        tl.to(
-          headlineRef.current,
-          {
-            opacity: 0,
-            scale: 1.04,
-            ease: "power2.in",
-            duration: 0.16,
+          onComplete: () => {
+            if (progressRef.current) progressRef.current.textContent = "100 / 100";
           },
-          0.82
-        );
-      }
+        });
 
-      // --- PHASE 4: CLEARANCE BUFFER (timeline 0.93 -> 1.00) ---
-      // Screen is 100% clear before unpinning to smoothly transition to next section
-      tl.to({}, { duration: 0.07 });
+        tiles.forEach((tile, i) => {
+          timeline.to(
+            tile,
+            {
+              x: 0,
+              y: 0,
+              scale: 1,
+              opacity: 1,
+              ease: "power2.out",
+              duration: 0.7,
+            },
+            i * 0.045
+          );
+        });
 
-      // Refresh ScrollTrigger after initial mount and layout calculations
-      const refreshTimer = setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 200);
+        if (headlineRef.current) {
+          timeline.to(
+            headlineRef.current,
+            {
+              opacity: 1,
+              scale: 1,
+              ease: "power2.out",
+              duration: 0.65,
+            },
+            0.12
+          );
+        }
 
-      return () => clearTimeout(refreshTimer);
-    }, section);
+        refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 200);
+      }, section);
+    };
 
-    return () => ctx.revert();
+    loadScrollAnimation().catch(() => {
+      // The visible static layout remains available if the optional animation fails.
+    });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(refreshTimer);
+      if (ctx) ctx.revert();
+    };
   }, [scrollDistance]);
 
   return (

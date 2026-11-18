@@ -1,4 +1,5 @@
 .reveal-scroll {
+  min-height: 100svh;
   position: relative;
   width: 100%;
   background-color: var(--color-bg);
@@ -38,7 +39,6 @@
   width: 100%;
   aspect-ratio: 1/1;
   overflow: visible;
-  will-change: transform, opacity;
   transform-origin: center;
   pointer-events: auto;
   cursor: pointer;

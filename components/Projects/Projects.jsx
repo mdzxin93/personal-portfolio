@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import EngineeringSection from "@/components/Portfolio/EngineeringSection";
 import dynamic from "next/dynamic";
 
 const TileReveal = dynamic(() => import("@/components/TileReveal/TileReveal"), {
@@ -451,6 +452,9 @@ const Projects = () => {
           ))}
         </ul>
       </section>
+
+      {/* Keep engineering capabilities directly after the complete client-work list. */}
+      <EngineeringSection />
 
       {/* Load the cinematic video section only when it approaches the viewport. */}
       <DeferredTileReveal />

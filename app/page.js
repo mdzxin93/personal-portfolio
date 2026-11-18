@@ -4,7 +4,6 @@ import AboutSection from "@/components/About/AboutSection";
 import SmoothScroll from "@/components/SmoothScroll";
 import Projects from "@/components/Projects/Projects";
 import PortfolioSections from "@/components/Portfolio/PortfolioSections";
-import HorizontalScroll from "@/components/HorizontalScroll/HorizontalScroll";
 import Contact from "@/components/Contact/Contact";
 import SiteFooter from "@/components/SiteFooter/SiteFooter";
 import BlurController from "@/components/GradualBlur/BlurController";
@@ -18,7 +17,6 @@ export default function Home() {
         <AboutSection />
         <Projects />
         <PortfolioSections />
-        <HorizontalScroll />
         <Contact />
         <SiteFooter />
         <BlurController />
