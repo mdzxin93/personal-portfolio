@@ -11,8 +11,8 @@ const HorizontalScroll = () => {
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
-    const ventures = document.getElementById("ventures");
-    if (!wrapper || !ventures) return;
+    const evidenceSection = document.getElementById("impact");
+    if (!wrapper || !evidenceSection) return;
 
     let cancelled = false;
     let initialized = false;
@@ -40,23 +40,14 @@ const HorizontalScroll = () => {
         context = gsap.context(() => {
           const chars = text.querySelectorAll(".hs-char");
 
-          const getPinDistance = () => {
-            const textWidth = text.scrollWidth;
-            const viewport = window.innerWidth;
-            return Math.max(textWidth - viewport * 0.1, viewport);
-          };
-
           const scrollTween = gsap.to(text, {
             xPercent: -110,
             ease: "none",
             scrollTrigger: {
-              trigger: sticky,
-              start: "top top",
-              end: () => "+=" + getPinDistance(),
+              trigger: wrapper,
+              start: "top bottom",
+              end: "bottom top",
               scrub: 0.5,
-              pin: sticky,
-              pinSpacing: true,
-              anticipatePin: 1,
               invalidateOnRefresh: true,
             },
           });
@@ -83,10 +74,11 @@ const HorizontalScroll = () => {
       }
     };
 
-    // Wait until Products & Solutions has moved past the middle of the screen.
-    // This prevents the next headline's animation code from loading too early.
+    // Defer the headline animation until the complete “Evidence over empty
+    // numbers” section has passed the middle of the viewport. This keeps the
+    // headline from appearing or animating while the evidence cards are being read.
     const hasPassedReadingPoint = () =>
-      ventures.getBoundingClientRect().bottom <= window.innerHeight * 0.5;
+      evidenceSection.getBoundingClientRect().bottom <= window.innerHeight * 0.5;
 
     if (hasPassedReadingPoint()) {
       initializeAnimation();
@@ -101,7 +93,7 @@ const HorizontalScroll = () => {
         { rootMargin: "0px 0px -50% 0px", threshold: 0 }
       );
 
-      gateObserver.observe(ventures);
+      gateObserver.observe(evidenceSection);
 
       return () => {
         cancelled = true;

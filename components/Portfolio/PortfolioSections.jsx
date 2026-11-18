@@ -131,25 +131,6 @@ export default function PortfolioSections() {
         </div>
       </section>
 
-      <section id="demonstrations" className="portfolio-section portfolio-demos">
-        <SectionHeading eyebrow="SEE THE WORK" title={<>Real projects.<br />Real implementation.</>} copy="Open the source or live preview where one is available. Projects still in development are labelled clearly instead of being presented as finished products." />
-        <div className="demo-list">
-          {engineeringProjects.map((project) => (
-            <article className="demo-row" key={project.slug}>
-              <div className="demo-row__identity">
-                <span>{project.number}</span>
-                <div><h3>{project.name}</h3><p>{project.status}</p></div>
-              </div>
-              <div className="demo-row__actions">
-                {project.demo ? <a href={project.demo} target="_blank" rel="noreferrer">Live preview <Arrow /></a> : <span className="demo-row__unavailable">No public demo yet</span>}
-                {project.repository ? <a href={project.repository} target="_blank" rel="noreferrer">Source code <Arrow /></a> : <span className="demo-row__unavailable">Repository not public</span>}
-                <Link href={`/work/${project.slug}`}>Details <Arrow /></Link>
-              </div>
-            </article>
-          ))}
-        </div>
-        <p className="demo-note">Project screenshots and walkthrough videos are included only where verified assets are available. More captures can be added as each project reaches a stable demo state.</p>
-      </section>
     </div>
   );
 }
