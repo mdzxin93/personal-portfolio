@@ -37,19 +37,30 @@ const HorizontalScroll = () => {
         const text = textRef.current;
         if (!sticky || !text) return;
 
+        // Start the horizontal timeline only after the metrics section has
+        // completely cleared the viewport. If the next section is already
+        // partly in view, begin at the current scroll position rather than
+        // calculating progress from an earlier trigger point.
+        const animationStart = Math.max(
+          window.scrollY,
+          window.scrollY + wrapper.getBoundingClientRect().top
+        );
+        const animationEnd =
+          animationStart + wrapper.offsetHeight + window.innerHeight;
+
         context = gsap.context(() => {
           const words = text.querySelectorAll(".hs-word");
 
-          // Reset to the true beginning so the reveal always starts at “I”.
-          gsap.set(text, { x: 0 });
+          // Always reset the track to its true beginning: the first word “I”.
+          gsap.set(text, { x: 0, xPercent: 0 });
 
           const scrollTween = gsap.to(text, {
             xPercent: -110,
             ease: "none",
             scrollTrigger: {
               trigger: wrapper,
-              start: "top bottom",
-              end: "bottom top",
+              start: animationStart,
+              end: animationEnd,
               scrub: 0.5,
               invalidateOnRefresh: true,
             },
