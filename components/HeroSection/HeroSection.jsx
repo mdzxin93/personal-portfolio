@@ -92,7 +92,7 @@ const HeroSection = () => {
               alt="Mohammed Zain"
               fill
               priority
-              unoptimized
+              fetchPriority="high"
               sizes="174px"
               className="object-cover object-[center_28%]"
             />
@@ -152,7 +152,6 @@ const HeroSection = () => {
             alt="Mohammed Zain — portfolio hero"
             fill
             priority
-            unoptimized
             sizes="100vw"
             className="hero-background-media object-cover object-[66%_28%] lg:object-[46%_center]"
           />

@@ -11,8 +11,8 @@ const HorizontalScroll = () => {
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
-    const ventures = document.getElementById("ventures");
-    if (!wrapper || !ventures) return;
+    const evidenceSection = document.getElementById("impact");
+    if (!wrapper || !evidenceSection) return;
 
     let cancelled = false;
     let initialized = false;
@@ -38,36 +38,32 @@ const HorizontalScroll = () => {
         if (!sticky || !text) return;
 
         context = gsap.context(() => {
-          const chars = text.querySelectorAll(".hs-char");
+          const words = text.querySelectorAll(".hs-word");
 
-          const getPinDistance = () => {
-            const textWidth = text.scrollWidth;
-            const viewport = window.innerWidth;
-            return Math.max(textWidth - viewport * 0.1, viewport);
-          };
+          // Reset to the true beginning so the reveal always starts at “I”.
+          gsap.set(text, { x: 0 });
 
           const scrollTween = gsap.to(text, {
             xPercent: -110,
             ease: "none",
             scrollTrigger: {
-              trigger: sticky,
-              start: "top top",
-              end: () => "+=" + getPinDistance(),
+              trigger: wrapper,
+              start: "top bottom",
+              end: "bottom top",
               scrub: 0.5,
-              pin: sticky,
-              pinSpacing: true,
-              anticipatePin: 1,
               invalidateOnRefresh: true,
             },
           });
 
-          chars.forEach((char) => {
-            gsap.from(char, {
-              yPercent: gsap.utils.random(-200, 200),
-              rotation: gsap.utils.random(-20, 20),
+          // Reveal complete words in reading order: “I” is always first.
+          words.forEach((word) => {
+            gsap.from(word, {
+              yPercent: gsap.utils.random(-120, 120),
+              rotation: gsap.utils.random(-10, 10),
+              opacity: 0,
               ease: "back.out(1.2)",
               scrollTrigger: {
-                trigger: char,
+                trigger: word,
                 containerAnimation: scrollTween,
                 start: "left 100%",
                 end: "left 30%",
@@ -83,10 +79,11 @@ const HorizontalScroll = () => {
       }
     };
 
-    // Wait until Products & Solutions has moved past the middle of the screen.
-    // This prevents the next headline's animation code from loading too early.
+    // Keep the headline hidden until the entire “Evidence over empty numbers”
+    // section has cleared the top edge of the viewport. It can enter only after
+    // the metrics section has fully moved out of view.
     const hasPassedReadingPoint = () =>
-      ventures.getBoundingClientRect().bottom <= window.innerHeight * 0.5;
+      evidenceSection.getBoundingClientRect().bottom <= 0;
 
     if (hasPassedReadingPoint()) {
       initializeAnimation();
@@ -98,10 +95,10 @@ const HorizontalScroll = () => {
             initializeAnimation();
           }
         },
-        { rootMargin: "0px 0px -50% 0px", threshold: 0 }
+        { rootMargin: "0px", threshold: 0 }
       );
 
-      gateObserver.observe(ventures);
+      gateObserver.observe(evidenceSection);
 
       return () => {
         cancelled = true;
