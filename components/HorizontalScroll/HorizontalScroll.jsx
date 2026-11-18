@@ -11,98 +11,134 @@ const HorizontalScroll = () => {
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
-    if (!wrapper) return;
+    const ventures = document.getElementById("ventures");
+    if (!wrapper || !ventures) return;
 
     let cancelled = false;
+    let initialized = false;
     let context;
 
-    const observer = new IntersectionObserver(
-      async ([entry]) => {
-        if (!entry.isIntersecting) return;
-        observer.disconnect();
+    const initializeAnimation = async () => {
+      if (initialized || cancelled) return;
+      initialized = true;
 
-        try {
-          const [gsapModule, scrollTriggerModule] = await Promise.all([
-            import("gsap"),
-            import("gsap/ScrollTrigger"),
-          ]);
-          if (cancelled) return;
+      try {
+        const [gsapModule, scrollTriggerModule] = await Promise.all([
+          import("gsap"),
+          import("gsap/ScrollTrigger"),
+        ]);
+        if (cancelled) return;
 
-          const gsap = gsapModule.default;
-          const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
-          gsap.registerPlugin(ScrollTrigger);
+        const gsap = gsapModule.default;
+        const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+        gsap.registerPlugin(ScrollTrigger);
 
-          const sticky = stickyRef.current;
-          const text = textRef.current;
-          if (!sticky || !text) return;
+        const sticky = stickyRef.current;
+        const text = textRef.current;
+        if (!sticky || !text) return;
 
-          context = gsap.context(() => {
-            const chars = text.querySelectorAll(".hs-char");
+        context = gsap.context(() => {
+          const chars = text.querySelectorAll(".hs-char");
 
-            const getPinDistance = () => {
-              const textWidth = text.scrollWidth;
-              const viewport = window.innerWidth;
-              return Math.max(textWidth - viewport * 0.1, viewport);
-            };
+          const getPinDistance = () => {
+            const textWidth = text.scrollWidth;
+            const viewport = window.innerWidth;
+            return Math.max(textWidth - viewport * 0.1, viewport);
+          };
 
-            const scrollTween = gsap.to(text, {
-              xPercent: -110,
-              ease: "none",
+          const scrollTween = gsap.to(text, {
+            xPercent: -110,
+            ease: "none",
+            scrollTrigger: {
+              trigger: sticky,
+              start: "top top",
+              end: () => "+=" + getPinDistance(),
+              scrub: 0.5,
+              pin: sticky,
+              pinSpacing: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          chars.forEach((char) => {
+            gsap.from(char, {
+              yPercent: gsap.utils.random(-200, 200),
+              rotation: gsap.utils.random(-20, 20),
+              ease: "back.out(1.2)",
               scrollTrigger: {
-                trigger: sticky,
-                start: "top top",
-                end: () => "+=" + getPinDistance(),
-                scrub: 0.5,
-                pin: sticky,
-                pinSpacing: true,
-                anticipatePin: 1,
-                invalidateOnRefresh: true,
+                trigger: char,
+                containerAnimation: scrollTween,
+                start: "left 100%",
+                end: "left 30%",
+                scrub: 1,
               },
             });
+          });
 
-            chars.forEach((char) => {
-              gsap.from(char, {
-                yPercent: gsap.utils.random(-200, 200),
-                rotation: gsap.utils.random(-20, 20),
-                ease: "back.out(1.2)",
-                scrollTrigger: {
-                  trigger: char,
-                  containerAnimation: scrollTween,
-                  start: "left 100%",
-                  end: "left 30%",
-                  scrub: 1,
-                },
-              });
-            });
-          }, wrapper);
-        } catch {
-          // The heading remains visible and readable without the animation.
-        }
-      },
-      { rootMargin: "900px 0px" }
-    );
+          ScrollTrigger.refresh();
+        }, wrapper);
+      } catch {
+        // Keep the complete headline readable if the optional animation fails.
+      }
+    };
 
-    observer.observe(wrapper);
+    // Wait until Products & Solutions has moved past the middle of the screen.
+    // This prevents the next headline's animation code from loading too early.
+    const hasPassedReadingPoint = () =>
+      ventures.getBoundingClientRect().bottom <= window.innerHeight * 0.5;
+
+    if (hasPassedReadingPoint()) {
+      initializeAnimation();
+    } else {
+      const gateObserver = new IntersectionObserver(
+        ([entry]) => {
+          if (hasPassedReadingPoint()) {
+            gateObserver.disconnect();
+            initializeAnimation();
+          }
+        },
+        { rootMargin: "0px 0px -50% 0px", threshold: 0 }
+      );
+
+      gateObserver.observe(ventures);
+
+      return () => {
+        cancelled = true;
+        gateObserver.disconnect();
+        if (context) context.revert();
+      };
+    }
+
     return () => {
       cancelled = true;
-      observer.disconnect();
       if (context) context.revert();
     };
   }, []);
 
-  // Split text into words and chars while preserving spaces
-  const renderText = () => {
-    return TEXT.split(" ").map((word, wi, arr) => (
-      <span key={wi} className="hs-word" style={{ display: "inline-block", whiteSpace: "nowrap" }}>
-        {word.split("").map((char, ci) => (
-          <span key={ci} className="hs-char" style={{ display: "inline-block" }}>
+  const renderText = () =>
+    TEXT.split(" ").map((word, wordIndex, words) => (
+      <span
+        key={wordIndex}
+        className="hs-word"
+        style={{ display: "inline-block", whiteSpace: "nowrap" }}
+      >
+        {word.split("").map((char, charIndex) => (
+          <span
+            key={charIndex}
+            className="hs-char"
+            style={{ display: "inline-block" }}
+          >
             {char}
           </span>
         ))}
-        {wi < arr.length - 1 && <span className="hs-char" style={{ display: "inline-block" }}>&nbsp;</span>}
+        {wordIndex < words.length - 1 && (
+          <span className="hs-char" style={{ display: "inline-block" }}>
+            &nbsp;
+          </span>
+        )}
       </span>
     ));
-  };
 
   return (
     <section className="Horizontal" ref={wrapperRef}>
