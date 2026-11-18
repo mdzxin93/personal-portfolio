@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { animated, useSpring } from "@react-spring/web";
 import { Trail } from "./TrailText";
 
@@ -142,9 +143,13 @@ function Navbar() {
             onClick={(e) => handleMobileNav(e, "top")}
             className="flex items-center gap-2.5 cursor-pointer hover:opacity-85 transition-opacity"
           >
-            <img
-              src="/about-portrait.png"
+            <Image
+              src="/about-portrait.webp"
               alt="Mohammed Zain J"
+              width={32}
+              height={32}
+              unoptimized
+              sizes="32px"
               className="w-8 h-8 rounded-full object-cover object-top border border-fg/10"
             />
             <span className="tracking-wider font-semibold text-lg text-fg" style={{ letterSpacing: "-0.03em" }}>
@@ -264,9 +269,13 @@ function Navbar() {
         <div className="items-center justify-between hidden lg:flex">
           <div className="flex items-center">
             <Link href="/" aria-label="Home" className="flex items-center gap-3 hover:opacity-85 transition-opacity">
-              <img
-                src="/about-portrait.png"
+              <Image
+                src="/about-portrait.webp"
                 alt="Mohammed Zain J"
+                width={40}
+                height={40}
+                unoptimized
+                sizes="40px"
                 className="w-10 h-10 rounded-full object-cover object-top border border-fg/10"
               />
               <span className="font-AeonikMedium text-2xl tracking-wider text-fg uppercase">MOHAMMED ZAIN.</span>

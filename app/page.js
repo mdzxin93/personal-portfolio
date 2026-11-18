@@ -1,14 +1,10 @@
 "use client";
 import { Suspense, useRef, useEffect } from "react";
-import Footer from "@/components/Character/Experience";
 import FeaturedVideo from "@/components/Featured/FeaturedVideo";
 import Header from "@/components/Featured/Header";
 import Skiggle from "@/components/Featured/Skiggle";
 import SubHeader from "@/components/Featured/SubHeader";
-import Description from "@/components/Navbar/Description";
 import Navbar from "@/components/Navbar/Navbar";
-import ScrollText from "@/components/Navbar/ScrollText";
-import FeaturedWork from "@/components/FeaturedWork/FeaturedWork";
 import HeroSection from "@/components/HeroSection/HeroSection";
 import SmoothScroll from "@/components/SmoothScroll";
 import GradualBlur from "@/components/GradualBlur/GradualBlur";
@@ -16,75 +12,33 @@ import HorizontalScroll from "@/components/HorizontalScroll/HorizontalScroll";
 import Projects from "@/components/Projects/Projects";
 import Contact from "@/components/Contact/Contact";
 import SiteFooter from "@/components/SiteFooter/SiteFooter";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export default function Home() {
   const ref = useRef(null);
   const blurRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    console.clear();
-    console.log(
-      "%cCREATED BY MOHAMMED ZAIN",
-      "background: #D9E6FF; color: #0f172a; font-size: 16px; font-weight: 800; padding: 10px 16px; border-radius: 10px; letter-spacing: 2px;"
-    );
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    gsap.registerPlugin(ScrollTrigger);
-
     const blur = blurRef.current;
     const footer = document.getElementById("main-footer");
     if (!blur || !footer) return;
 
-    // The GradualBlur effect should be visible across the whole site, but
-    // disabled while either the hero section or the footer is on screen.
-    const setVisible = (visible) =>
-      gsap.to(blur, { autoAlpha: visible ? 1 : 0, duration: 0.3 });
-
+    let footerInView = false;
     const updateBlurState = () => {
-      const isAtTop = window.scrollY < 20;
-      const footerInView = footer.getBoundingClientRect().top < window.innerHeight;
-      const shouldBeVisible = !isAtTop && !footerInView;
-      setVisible(shouldBeVisible);
+      blur.style.opacity = window.scrollY >= 20 && !footerInView ? "1" : "0";
     };
 
+    const footerObserver = new IntersectionObserver(([entry]) => {
+      footerInView = entry.isIntersecting;
+      updateBlurState();
+    });
+
+    footerObserver.observe(footer);
+    window.addEventListener("scroll", updateBlurState, { passive: true });
     updateBlurState();
 
-    const triggerHeroTop = ScrollTrigger.create({
-      trigger: "#hero-section",
-      start: "top top",
-      end: "50px top",
-      onEnter: updateBlurState,
-      onLeaveBack: updateBlurState,
-      onEnterBack: updateBlurState,
-    });
-
-    const triggerHero = ScrollTrigger.create({
-      trigger: "#hero-section",
-      start: "bottom bottom",
-      onEnter: updateBlurState,
-      onLeaveBack: updateBlurState,
-    });
-
-    const triggerFooter = ScrollTrigger.create({
-      trigger: footer,
-      start: "top bottom",
-      end: "bottom top",
-      onEnter: updateBlurState,
-      onEnterBack: updateBlurState,
-      onLeave: updateBlurState,
-      onLeaveBack: updateBlurState,
-    });
-
     return () => {
-      triggerHeroTop.kill();
-      triggerHero.kill();
-      triggerFooter.kill();
+      footerObserver.disconnect();
+      window.removeEventListener("scroll", updateBlurState);
     };
   }, []);
 
@@ -139,6 +93,8 @@ export default function Home() {
             inset: 0,
             pointerEvents: "none",
             zIndex: 99999,
+            opacity: 0,
+            transition: "opacity 300ms ease",
           }}
         >
           <GradualBlur

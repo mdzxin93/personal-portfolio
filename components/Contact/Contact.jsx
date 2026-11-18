@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Real contact info — kept in sync with what's already in `SiteFooter`.
 // If any of these change, update them in both places.
@@ -37,54 +35,84 @@ const Contact = () => {
   const ctaRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    gsap.registerPlugin(ScrollTrigger);
+    const section = sectionRef.current;
+    if (!section) return;
 
-    const ctx = gsap.context(() => {
-      const eyebrowChars = eyebrowRef.current?.querySelectorAll(".ct-char") ?? [];
-      const headlineChars = headlineRef.current?.querySelectorAll(".ct-char") ?? [];
+    let cancelled = false;
+    let context;
 
-      gsap.from(eyebrowChars, {
-        opacity: 0,
-        y: 40,
-        duration: 1.0,
-        stagger: { amount: 0.4, from: "start" },
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: eyebrowRef.current,
-          start: "top 90%",
-          toggleActions: "play none none reverse",
-        },
-      });
+    const observer = new IntersectionObserver(
+      async ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
 
-      gsap.from(headlineChars, {
-        opacity: 0,
-        y: 200,
-        duration: 1.4,
-        stagger: { amount: 0.6, from: "start" },
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: headlineRef.current,
-          start: "top 85%",
-          toggleActions: "play none none reverse",
-        },
-      });
+        try {
+          const [gsapModule, scrollTriggerModule] = await Promise.all([
+            import("gsap"),
+            import("gsap/ScrollTrigger"),
+          ]);
+          if (cancelled) return;
 
-      gsap.from([emailRef.current, ctaRef.current], {
-        autoAlpha: 0,
-        y: 50,
-        duration: 1,
-        stagger: 0.15,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: emailRef.current,
-          start: "top 95%",
-          toggleActions: "play none none reverse",
-        },
-      });
-    }, sectionRef.current);
+          const gsap = gsapModule.default;
+          const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+          gsap.registerPlugin(ScrollTrigger);
 
-    return () => ctx.revert();
+          context = gsap.context(() => {
+            const eyebrowChars = eyebrowRef.current?.querySelectorAll(".ct-char") ?? [];
+            const headlineChars = headlineRef.current?.querySelectorAll(".ct-char") ?? [];
+
+            gsap.from(eyebrowChars, {
+              opacity: 0,
+              y: 40,
+              duration: 1.0,
+              stagger: { amount: 0.4, from: "start" },
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: eyebrowRef.current,
+                start: "top 90%",
+                toggleActions: "play none none reverse",
+              },
+            });
+
+            gsap.from(headlineChars, {
+              opacity: 0,
+              y: 200,
+              duration: 1.4,
+              stagger: { amount: 0.6, from: "start" },
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: headlineRef.current,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+              },
+            });
+
+            gsap.from([emailRef.current, ctaRef.current], {
+              autoAlpha: 0,
+              y: 50,
+              duration: 1,
+              stagger: 0.15,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: emailRef.current,
+                start: "top 95%",
+                toggleActions: "play none none reverse",
+              },
+            });
+          }, section);
+        } catch {
+          // Contact links remain visible and usable without the scroll effects.
+        }
+      },
+      { rootMargin: "800px 0px" }
+    );
+
+    observer.observe(section);
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      if (context) context.revert();
+    };
   }, []);
 
   const splitChars = (text) =>

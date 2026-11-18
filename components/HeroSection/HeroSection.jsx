@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { motion } from "framer-motion";
 
@@ -31,7 +32,7 @@ const HeroSection = () => {
     tl.fromTo(
       loaderRef.current?.querySelector(".loader-progress-fill"),
       { scaleX: 0 },
-      { scaleX: 1, duration: 3.8, ease: "none" },
+      { scaleX: 1, duration: 0.75, ease: "none" },
       "start"
     );
 
@@ -40,10 +41,10 @@ const HeroSection = () => {
       loaderRef.current,
       {
         y: "-100%",
-        duration: 1.0,
+        duration: 0.55,
         ease: "power3.inOut",
       },
-      "start+=2.8"
+      "start+=0.4"
     );
 
     // Hero image reveal (fade & scale down to 1)
@@ -52,10 +53,10 @@ const HeroSection = () => {
       {
         autoAlpha: 1,
         scale: 1,
-        duration: 1.0,
+        duration: 0.55,
         ease: "power2.out",
       },
-      "start+=2.9"
+      "start+=0.45"
     );
 
     // Timeout-based interactive name transitions in different languages
@@ -157,12 +158,14 @@ const HeroSection = () => {
             transition={{ duration: 0.85, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
             className="relative mb-6 h-[190px] w-[174px] overflow-hidden rounded-[26px] border border-white/15 bg-[#24211e] shadow-[0_24px_80px_rgba(0,0,0,0.5)] sm:h-[218px] sm:w-[194px]"
           >
-            <img
-              src="/about-portrait.png"
+            <Image
+              src="/about-portrait.webp"
               alt="Mohammed Zain"
-              fetchPriority="high"
-              decoding="async"
-              className="h-full w-full object-cover object-[center_28%]"
+              fill
+              priority
+              unoptimized
+              sizes="174px"
+              className="object-cover object-[center_28%]"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-white/5" />
             <div className="pointer-events-none absolute inset-0 rounded-[26px] ring-1 ring-inset ring-white/10" />
@@ -210,12 +213,14 @@ const HeroSection = () => {
           ref={heroVisualRef}
           className="absolute inset-x-3 top-[76px] bottom-3 w-auto h-auto z-0 overflow-hidden bg-black rounded-[28px] border-[6px] border-[#242424] shadow-[0_16px_44px_rgba(0,0,0,0.28)] lg:inset-0 lg:w-full lg:h-full lg:rounded-none lg:border-0 lg:shadow-none"
         >
-          <img
-            src="/hero-section.png"
+          <Image
+            src="/hero-section.webp"
             alt="Mohammed Zain — portfolio hero"
-            fetchPriority="high"
-            decoding="async"
-            className="hero-background-media absolute inset-0 w-full h-full object-cover object-[66%_28%] lg:object-[46%_center]"
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            className="hero-background-media object-cover object-[66%_28%] lg:object-[46%_center]"
           />
 
           {/* Mobile portrait-card gradient; desktop keeps its original left gradient. */}

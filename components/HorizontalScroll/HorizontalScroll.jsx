@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const TEXT = "I Transform Ideas into Production-Ready Applications.";
 
@@ -12,70 +10,84 @@ const HorizontalScroll = () => {
   const textRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    gsap.registerPlugin(ScrollTrigger);
-
     const wrapper = wrapperRef.current;
-    const sticky = stickyRef.current;
-    const text = textRef.current;
-    if (!wrapper || !sticky || !text) return;
+    if (!wrapper) return;
 
-    const ctx = gsap.context(() => {
-      const chars = text.querySelectorAll(".hs-char");
+    let cancelled = false;
+    let context;
 
-      // Pin the section once it hits the top of the viewport, then drive the
-      // horizontal text animation entirely from scroll. The pin is held for
-      // the full distance the text needs to travel — i.e. however many extra
-      // viewport heights it takes to scroll the heading from off-screen right
-      // to fully off-screen left — so the animation never gets cut short by
-      // the next section / footer arriving early. The pin only releases once
-      // the animation has fully played, after which scrolling continues on
-      // to the next section. Using ScrollTrigger.pin instead of
-      // `position:sticky` because the parent wrapper has `overflow-x: hidden`,
-      // which breaks sticky behaviour in some browsers.
-      const getPinDistance = () => {
-        const textWidth = text.scrollWidth;
-        const viewport = window.innerWidth;
-        // Distance the text must translate left so its right edge clears the
-        // viewport. Kept tight (no extra multiplier) so the pin releases
-        // immediately after the text exits — otherwise the user keeps
-        // scrolling on an empty background before the next section appears.
-        const travel = Math.max(textWidth - viewport * 0.1, viewport);
-        return travel;
-      };
+    const observer = new IntersectionObserver(
+      async ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
 
-      const scrollTween = gsap.to(text, {
-        xPercent: -110,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sticky,
-          start: "top top",
-          end: () => "+=" + getPinDistance(),
-          scrub: 0.5,
-          pin: sticky,
-          pinSpacing: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      });
+        try {
+          const [gsapModule, scrollTriggerModule] = await Promise.all([
+            import("gsap"),
+            import("gsap/ScrollTrigger"),
+          ]);
+          if (cancelled) return;
 
-      chars.forEach((char) => {
-        gsap.from(char, {
-          yPercent: gsap.utils.random(-200, 200),
-          rotation: gsap.utils.random(-20, 20),
-          ease: "back.out(1.2)",
-          scrollTrigger: {
-            trigger: char,
-            containerAnimation: scrollTween,
-            start: "left 100%",
-            end: "left 30%",
-            scrub: 1,
-          },
-        });
-      });
-    }, wrapper);
+          const gsap = gsapModule.default;
+          const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+          gsap.registerPlugin(ScrollTrigger);
 
-    return () => ctx.revert();
+          const sticky = stickyRef.current;
+          const text = textRef.current;
+          if (!sticky || !text) return;
+
+          context = gsap.context(() => {
+            const chars = text.querySelectorAll(".hs-char");
+
+            const getPinDistance = () => {
+              const textWidth = text.scrollWidth;
+              const viewport = window.innerWidth;
+              return Math.max(textWidth - viewport * 0.1, viewport);
+            };
+
+            const scrollTween = gsap.to(text, {
+              xPercent: -110,
+              ease: "none",
+              scrollTrigger: {
+                trigger: sticky,
+                start: "top top",
+                end: () => "+=" + getPinDistance(),
+                scrub: 0.5,
+                pin: sticky,
+                pinSpacing: true,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+              },
+            });
+
+            chars.forEach((char) => {
+              gsap.from(char, {
+                yPercent: gsap.utils.random(-200, 200),
+                rotation: gsap.utils.random(-20, 20),
+                ease: "back.out(1.2)",
+                scrollTrigger: {
+                  trigger: char,
+                  containerAnimation: scrollTween,
+                  start: "left 100%",
+                  end: "left 30%",
+                  scrub: 1,
+                },
+              });
+            });
+          }, wrapper);
+        } catch {
+          // The heading remains visible and readable without the animation.
+        }
+      },
+      { rootMargin: "900px 0px" }
+    );
+
+    observer.observe(wrapper);
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      if (context) context.revert();
+    };
   }, []);
 
   // Split text into words and chars while preserving spaces

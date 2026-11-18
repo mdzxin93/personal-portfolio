@@ -1,9 +1,41 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import TileReveal from "@/components/TileReveal/TileReveal";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const TileReveal = dynamic(() => import("@/components/TileReveal/TileReveal"), {
+  ssr: false,
+});
+
+const DeferredTileReveal = () => {
+  const hostRef = useRef(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "1400px 0px" }
+    );
+
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={hostRef} style={{ minHeight: "max(100vh, 600px)" }}>
+      {shouldLoad ? <TileReveal /> : null}
+    </div>
+  );
+};
 
 const PROJECTS = [
   {
@@ -13,7 +45,7 @@ const PROJECTS = [
     role: "Digital Marketing & Web Development",
     kind: "LIVE WEBSITE",
     note: "Agency website presenting digital marketing, web development, and growth services.",
-    image: "/images/aspire-sites/aspire-digital-solutions.png",
+    image: "/images/aspire-sites/aspire-digital-solutions.webp",
   },
   {
     number: "02",
@@ -22,7 +54,7 @@ const PROJECTS = [
     role: "Yoga & Wellness",
     kind: "LIVE WEBSITE",
     note: "Yoga and wellness website with class, practice, and programme information.",
-    image: "/images/aspire-sites/bhakti-yogshala.png",
+    image: "/images/aspire-sites/bhakti-yogshala.webp",
   },
   {
     number: "03",
@@ -31,7 +63,7 @@ const PROJECTS = [
     role: "Appliance Repair & Services",
     kind: "LIVE WEBSITE",
     note: "Service website for appliance support, repair offerings, and customer enquiries.",
-    image: "/images/aspire-sites/bharat-appliance-services.png",
+    image: "/images/aspire-sites/bharat-appliance-services.webp",
   },
   {
     number: "04",
@@ -40,7 +72,7 @@ const PROJECTS = [
     role: "Skincare & Digital Health",
     kind: "LIVE WEBSITE",
     note: "Skincare-focused digital platform presenting its services and user experience.",
-    image: "/images/aspire-sites/skinocare.png",
+    image: "/images/aspire-sites/skinocare.webp",
   },
   {
     number: "05",
@@ -49,7 +81,7 @@ const PROJECTS = [
     role: "Nutrition & Wellness",
     kind: "LIVE WEBSITE",
     note: "Nutrition and wellness website sharing guidance, services, and brand information.",
-    image: "/images/aspire-sites/nourish-with-relma.png",
+    image: "/images/aspire-sites/nourish-with-relma.webp",
   },
   {
     number: "06",
@@ -58,7 +90,7 @@ const PROJECTS = [
     role: "Healthcare",
     kind: "LIVE WEBSITE",
     note: "Multispecialty hospital website highlighting specialist care, emergency services, and patient appointments.",
-    image: "/images/aspire-sites/shefa-hospital.png",
+    image: "/images/aspire-sites/shefa-hospital.webp",
   },
   {
     number: "07",
@@ -67,7 +99,7 @@ const PROJECTS = [
     role: "Dermatology & Skincare",
     kind: "LIVE WEBSITE",
     note: "Skincare and dermatology website presenting products, services, and brand information.",
-    image: "/images/aspire-sites/euderm.png",
+    image: "/images/aspire-sites/euderm.webp",
   },
   {
     number: "08",
@@ -76,7 +108,7 @@ const PROJECTS = [
     role: "Commercial Interior Design",
     kind: "LIVE WEBSITE",
     note: "Commercial interior design studio showcasing workplace spaces, projects, and consultation services.",
-    image: "/images/aspire-sites/aa-designo.png",
+    image: "/images/aspire-sites/aa-designo.webp",
   },
   {
     number: "09",
@@ -85,7 +117,7 @@ const PROJECTS = [
     role: "Service & Support",
     kind: "LIVE WEBSITE",
     note: "Customer-facing service website with support and service information.",
-    image: "/images/aspire-sites/service-centre-india.png",
+    image: "/images/aspire-sites/service-centre-india.webp",
   },
   {
     number: "10",
@@ -94,7 +126,7 @@ const PROJECTS = [
     role: "Appliance Repair & Services",
     kind: "LIVE WEBSITE",
     note: "Appliance service website presenting repair support and customer contact information.",
-    image: "/images/aspire-sites/aspire-appliance-services.png",
+    image: "/images/aspire-sites/aspire-appliance-services.webp",
   },
 ];
 
@@ -105,7 +137,7 @@ const VENTURES = [
     href: "https://github.com/mdzxin93/autoeditor",
     kind: "AI VIDEO PRODUCTION",
     note: "Turns raw footage and a reference video into styled edits with cuts, zooms, captions, B-roll, and storyboards.",
-    image: "/images/projects/autoeditor-project.png",
+    image: "/images/projects/autoeditor-project.webp",
   },
   {
     name: "Titan Watches Voice Analysis",
@@ -113,7 +145,7 @@ const VENTURES = [
     href: "https://github.com/mdzxin93/titan-watches-voice-analysis",
     kind: "BUSINESS AUTOMATION",
     note: "A local watch-store workspace with a product storefront, customer inbox, order tracking, and Whisper-powered voice-note transcription.",
-    image: "/images/projects/titan-watches-voice-analysis.png",
+    image: "/images/projects/titan-watches-voice-analysis.webp",
   },
   {
     name: "CloudNAS",
@@ -121,7 +153,7 @@ const VENTURES = [
     href: "https://github.com/mdzxin93/CloudNAS",
     kind: "CLOUD STORAGE PLATFORM",
     note: "A full-stack cloud storage workspace with file management, secure account access, and cross-device clipboard sharing.",
-    image: "/images/projects/cloudnas-project.png",
+    image: "/images/projects/cloudnas-project.webp",
   },
 ];
 
@@ -158,7 +190,16 @@ const SolutionsAccordion = ({ items }) => {
               }
             }}
           >
-            <img className="solution-panel__image" src={item.image} alt="" aria-hidden="true" />
+            <Image
+              className="solution-panel__image"
+              src={item.image}
+              alt=""
+              aria-hidden="true"
+              fill
+              sizes="(max-width: 768px) 100vw, 100vw"
+              quality={72}
+              loading="lazy"
+            />
             <span className="solution-panel__shade" aria-hidden="true" />
             <span className="solution-panel__topline">
               <span>{String(index + 1).padStart(2, "0")} / {item.kind}</span>
@@ -223,9 +264,13 @@ const Row = ({ item, index }) => {
       >
         <span className="pj-num">{item.number || String(index + 1).padStart(2, "0")}</span>
         {item.image ? (
-          <img
+          <Image
             src={item.image}
             alt={`${item.name} website preview`}
+            width={160}
+            height={96}
+            sizes="(max-width: 640px) 96px, 160px"
+            quality={72}
             loading="lazy"
             className="project-preview w-24 h-16 sm:w-40 sm:h-24 object-cover object-top bg-white/5 rounded-xl border border-white/10 shrink-0"
           />
@@ -253,72 +298,103 @@ const Projects = () => {
   const venturesRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    gsap.registerPlugin(ScrollTrigger);
+    const targets = [sectionRef.current, venturesRef.current].filter(Boolean);
+    if (!targets.length) return;
 
-    const ctx = gsap.context(() => {
-      if (sectionRef.current) {
-        const rows = sectionRef.current.querySelectorAll(".pj-row");
-        gsap.from(rows, {
-          opacity: 0,
-          y: 60,
-          duration: 0.9,
-          stagger: 0.08,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-            once: true,
-          },
-        });
+    let cancelled = false;
+    let context;
 
-        const titles = sectionRef.current.querySelectorAll(".pj-title");
-        gsap.from(titles, {
-          opacity: 0,
-          y: 40,
-          duration: 1,
-          stagger: 0.15,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 85%",
-            once: true,
-          },
-        });
-      }
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
 
-      if (venturesRef.current) {
-        const vRows = venturesRef.current.querySelectorAll(".pj-row");
-        gsap.from(vRows, {
-          opacity: 0,
-          y: 60,
-          duration: 0.9,
-          stagger: 0.08,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: venturesRef.current,
-            start: "top 80%",
-            once: true,
-          },
-        });
+        try {
+          const [gsapModule, scrollTriggerModule] = await Promise.all([
+            import("gsap"),
+            import("gsap/ScrollTrigger"),
+          ]);
+          if (cancelled) return;
 
-        const vTitles = venturesRef.current.querySelectorAll(".pj-title");
-        gsap.from(vTitles, {
-          opacity: 0,
-          y: 40,
-          duration: 1,
-          stagger: 0.15,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: venturesRef.current,
-            start: "top 85%",
-            once: true,
-          },
-        });
-      }
-    });
+          const gsap = gsapModule.default;
+          const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+          gsap.registerPlugin(ScrollTrigger);
 
-    return () => ctx.revert();
+          context = gsap.context(() => {
+            if (sectionRef.current) {
+              const rows = sectionRef.current.querySelectorAll(".pj-row");
+              gsap.from(rows, {
+                opacity: 0,
+                y: 60,
+                duration: 0.9,
+                stagger: 0.08,
+                ease: "power3.out",
+                scrollTrigger: {
+                  trigger: sectionRef.current,
+                  start: "top 80%",
+                  once: true,
+                },
+              });
+
+              const titles = sectionRef.current.querySelectorAll(".pj-title");
+              gsap.from(titles, {
+                opacity: 0,
+                y: 40,
+                duration: 1,
+                stagger: 0.15,
+                ease: "power3.out",
+                scrollTrigger: {
+                  trigger: sectionRef.current,
+                  start: "top 85%",
+                  once: true,
+                },
+              });
+            }
+
+            if (venturesRef.current) {
+              const vRows = venturesRef.current.querySelectorAll(".pj-row");
+              gsap.from(vRows, {
+                opacity: 0,
+                y: 60,
+                duration: 0.9,
+                stagger: 0.08,
+                ease: "power3.out",
+                scrollTrigger: {
+                  trigger: venturesRef.current,
+                  start: "top 80%",
+                  once: true,
+                },
+              });
+
+              const vTitles = venturesRef.current.querySelectorAll(".pj-title");
+              gsap.from(vTitles, {
+                opacity: 0,
+                y: 40,
+                duration: 1,
+                stagger: 0.15,
+                ease: "power3.out",
+                scrollTrigger: {
+                  trigger: venturesRef.current,
+                  start: "top 85%",
+                  once: true,
+                },
+              });
+            }
+          });
+        } catch {
+          // Project content remains usable without the optional scroll effects.
+        }
+      },
+      { rootMargin: "900px 0px" }
+    );
+
+    targets.forEach((target) => observer.observe(target));
+
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      if (context) context.revert();
+    };
   }, []);
 
   return (
@@ -336,8 +412,8 @@ const Projects = () => {
         </ul>
       </section>
 
-      {/* Animated Tile Reveal Section */}
-      <TileReveal />
+      {/* Load the cinematic video section only when it approaches the viewport. */}
+      <DeferredTileReveal />
 
       <section id="ventures" className="pj-section" ref={venturesRef}>
         <div className="pj-head">

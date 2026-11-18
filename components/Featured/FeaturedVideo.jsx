@@ -31,11 +31,11 @@ const FeaturedVideo = ({refForward, ...props }) => {
       {...props}
     >
       <Image
-        src="/about-portrait.png"
+        src="/about-portrait.webp"
         alt="Mohammed Zain portrait"
         fill
-        priority
-        unoptimized
+        loading="lazy"
+        quality={80}
         sizes="(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 856px"
         className="object-cover object-top"
       />

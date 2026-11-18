@@ -1,23 +1,17 @@
-import { Inter } from 'next/font/google'
+import '@fontsource/inter/300.css'
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/500.css'
+import '@fontsource/inter/600.css'
+import '@fontsource/inter/700.css'
+import '@fontsource/inter/800.css'
 import './globals.css'
-
-// Inter is the single typeface used everywhere on the site. Loading it through
-// next/font exposes a CSS variable (`--font-inter`) we can reference from any
-// global CSS rule, while `inter.className` applies it as the default font on
-// the body so every component inherits it automatically.
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-})
 
 export const metadata = {
   title: 'Mohammed Zain J | Full-Stack Developer & AI Enthusiast',
   description: 'Mohammed Zain J is a Full-Stack Developer and AI & Information Science Enthusiast based in Mysuru, Karnataka, specializing in scalable web apps, MERN stack, Gemini API, and technical SEO.',
   icons: {
-    icon: '/about-portrait.png',
-    shortcut: '/about-portrait.png',
+    icon: '/about-portrait.webp',
+    shortcut: '/about-portrait.webp',
   },
 }
 
@@ -40,11 +34,11 @@ const themeBootstrap = `
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={inter.variable} data-theme="light" suppressHydrationWarning>
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body>{children}</body>
     </html>
   )
 }

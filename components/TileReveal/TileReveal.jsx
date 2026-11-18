@@ -18,8 +18,21 @@ const VideoTile = ({ src, index }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const handleMouseEnter = () => {
+  const getVideo = () => {
     const video = videoRef.current;
+    if (!video) return null;
+    // Keep every large video completely off the network until the visitor
+    // explicitly interacts with its tile.
+    if (!video.hasAttribute("src")) {
+      video.src = src;
+      video.load();
+    }
+    return video;
+  };
+
+  const handleMouseEnter = () => {
+    if (window.matchMedia("(hover: none)").matches) return;
+    const video = getVideo();
     if (!video) return;
     setIsPlaying(true);
     const playPromise = video.play();
@@ -38,7 +51,7 @@ const VideoTile = ({ src, index }) => {
   };
 
   const handleTouch = () => {
-    const video = videoRef.current;
+    const video = getVideo();
     if (!video) return;
     if (video.paused) {
       setIsPlaying(true);
@@ -67,11 +80,12 @@ const VideoTile = ({ src, index }) => {
       >
         <video
           ref={videoRef}
-          src={src}
+          data-src={src}
           muted
           loop
           playsInline
-          preload="auto"
+          preload="none"
+          poster="/video_frame_preview.jpg"
           className="tile-video"
           onLoadedMetadata={handleLoadedMetadata}
           onPlay={() => setIsPlaying(true)}
