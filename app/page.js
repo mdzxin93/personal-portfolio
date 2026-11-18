@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection/HeroSection";
 import AboutSection from "@/components/About/AboutSection";
 import SmoothScroll from "@/components/SmoothScroll";
 import Projects from "@/components/Projects/Projects";
+import PortfolioSections from "@/components/Portfolio/PortfolioSections";
 import HorizontalScroll from "@/components/HorizontalScroll/HorizontalScroll";
 import Contact from "@/components/Contact/Contact";
 import SiteFooter from "@/components/SiteFooter/SiteFooter";
@@ -16,6 +17,7 @@ export default function Home() {
         <HeroSection />
         <AboutSection />
         <Projects />
+        <PortfolioSections />
         <HorizontalScroll />
         <Contact />
         <SiteFooter />

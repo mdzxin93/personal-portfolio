@@ -31,7 +31,7 @@ const DeferredTileReveal = () => {
   }, []);
 
   return (
-    <div ref={hostRef} style={{ minHeight: "max(100vh, 600px)" }}>
+    <div ref={hostRef} className="tile-reveal-reserve">
       {shouldLoad ? <TileReveal /> : null}
     </div>
   );
@@ -135,6 +135,7 @@ const VENTURES = [
     name: "AutoEditor",
     role: "AI Video Editing · Reference-Driven Workflows",
     href: "https://github.com/mdzxin93/autoeditor",
+    caseStudyHref: "/work/autoeditor",
     kind: "AI VIDEO PRODUCTION",
     note: "Turns raw footage and a reference video into styled edits with cuts, zooms, captions, B-roll, and storyboards.",
     image: "/images/projects/autoeditor-project.webp",
@@ -143,6 +144,7 @@ const VENTURES = [
     name: "Titan Watches Voice Analysis",
     role: "WhatsApp Business · Voice AI",
     href: "https://github.com/mdzxin93/titan-watches-voice-analysis",
+    caseStudyHref: "/work/titan-watches-voice-analysis",
     kind: "BUSINESS AUTOMATION",
     note: "A local watch-store workspace with a product storefront, customer inbox, order tracking, and Whisper-powered voice-note transcription.",
     image: "/images/projects/titan-watches-voice-analysis.webp",
@@ -151,9 +153,32 @@ const VENTURES = [
     name: "CloudNAS",
     role: "Full-Stack Cloud Storage · File Sharing",
     href: "https://github.com/mdzxin93/CloudNAS",
+    caseStudyHref: "/work/cloudnas",
     kind: "CLOUD STORAGE PLATFORM",
     note: "A full-stack cloud storage workspace with file management, secure account access, and cross-device clipboard sharing.",
     image: "/images/projects/cloudnas-project.webp",
+  },
+  {
+    name: "OilFlow",
+    role: "Collection & Trading Management",
+    caseStudyHref: "/work/oilflow",
+    kind: "BUSINESS OPERATIONS",
+    note: "An admin workspace for oil collection records, customer balances, reminders, and monthly reporting.",
+  },
+  {
+    name: "Moped Momos",
+    role: "Restaurant Ordering & Kitchen Workflow",
+    href: "https://moped-momos-app.preview.emergentagent.com",
+    caseStudyHref: "/work/moped-momos",
+    kind: "MOBILE APPLICATION",
+    note: "A mobile-first counter ordering experience with separate admin and kitchen workflows.",
+  },
+  {
+    name: "AgriMap",
+    role: "Agricultural GIS Desktop Prototype",
+    caseStudyHref: "/work/agrimap",
+    kind: "GIS & LAND ANALYSIS",
+    note: "A Windows desktop prototype for field boundaries, geospatial analysis, and crop-planning workflows.",
   },
 ];
 
@@ -190,16 +215,20 @@ const SolutionsAccordion = ({ items }) => {
               }
             }}
           >
-            <Image
-              className="solution-panel__image"
-              src={item.image}
-              alt=""
-              aria-hidden="true"
-              fill
-              sizes="(max-width: 768px) 100vw, 100vw"
-              quality={72}
-              loading="lazy"
-            />
+            {item.image ? (
+              <Image
+                className="solution-panel__image"
+                src={item.image}
+                alt=""
+                aria-hidden="true"
+                fill
+                sizes="(max-width: 768px) 100vw, 100vw"
+                quality={72}
+                loading="lazy"
+              />
+            ) : (
+              <span className="solution-panel__image-fallback" aria-hidden="true" />
+            )}
             <span className="solution-panel__shade" aria-hidden="true" />
             <span className="solution-panel__topline">
               <span>{String(index + 1).padStart(2, "0")} / {item.kind}</span>
@@ -211,17 +240,28 @@ const SolutionsAccordion = ({ items }) => {
               {isActive && (
                 <span className="solution-panel__details">
                   <span className="solution-panel__note">{item.note}</span>
-                  {item.href && (
-                    <a
-                      className="solution-panel__cta"
-                      href={item.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(event) => event.stopPropagation()}
-                    >
-                      Explore <ArrowIcon />
-                    </a>
-                  )}
+                  <span className="solution-panel__actions">
+                    {item.caseStudyHref && (
+                      <a
+                        className="solution-panel__cta"
+                        href={item.caseStudyHref}
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        Case study <ArrowIcon />
+                      </a>
+                    )}
+                    {item.href && (
+                      <a
+                        className="solution-panel__cta solution-panel__cta--secondary"
+                        href={item.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        {item.href.includes("github.com") ? "Source" : "Preview"} <ArrowIcon />
+                      </a>
+                    )}
+                  </span>
                 </span>
               )}
             </span>
