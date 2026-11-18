@@ -1,23 +1,24 @@
-import React  from 'react'
-import { useTrail, a } from '@react-spring/web'
+import React from "react";
 
-export const Trail = ({open, children, ...props }) => {
-  const items = React.Children.toArray(children)
-  const trail = useTrail(items.length, {
-    // config: { mass: 1, tension: 2000, friction: 200 },
-    opacity: open ? 1 : 0,
-    transform: `rotate(0deg)`,
-    y: 0,
-    from: { opacity: 0, y: 20 , transform: `rotate(4deg)` },
-  })
+export const Trail = ({ open, children, ...props }) => {
+  const items = React.Children.toArray(children);
+
   return (
     <div {...props}>
-      {trail.map(({ ...style }, index) => (
-        <a.div key={index} style={style}>
-          {items[index]}
-        </a.div>
+      {items.map((child, index) => (
+        <div
+          key={index}
+          style={{
+            opacity: open ? 1 : 0,
+            transform: open
+              ? "translateY(0) rotate(0deg)"
+              : "translateY(20px) rotate(4deg)",
+            transition: `opacity 450ms ease ${index * 60}ms, transform 450ms cubic-bezier(0.16, 1, 0.3, 1) ${index * 60}ms`,
+          }}
+        >
+          {child}
+        </div>
       ))}
     </div>
-  )
-}
-
+  );
+};

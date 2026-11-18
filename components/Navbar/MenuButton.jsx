@@ -1,63 +1,26 @@
 import React, { useRef, useState } from "react";
-import { a, useSpring } from "@react-spring/web";
 import Menu from "./Menu";
 
 const MenuButton = () => {
-  const [isOpen, open] = useState(false);
-  const offset = 10;
+  const [isOpen, setIsOpen] = useState(false);
+  const [dotsRotation, setDotsRotation] = useState(0);
+  const ref = useRef(null);
 
-  const [dots, dotsApi] = useSpring(() => ({
-    from: { transform: `rotate(0deg)` },
-  }));
-
-  const handleMouseEnter = () => {
-    dotsApi.start({ transform: `rotate(90deg)` });
-  };
-  const handleMouseLeave = () => {
-    if (!isOpen) {
-      dotsApi.start({ transform: `rotate(0deg)` });
-    }
-  };
-
-  const [menu, menuApi] = useSpring(() => ({
-    from: { y: offset, opacity: 1 },
-  }));
-
-  const [close, closeApi] = useSpring(() => ({
-    from: { y: offset, opacity: 0 },
-  }));
-
-  const handleClick = () => {
-    menuApi.stop();
-    closeApi.stop();
-      menuApi.start({
-        y: !isOpen ? -offset : offset,
-        opacity: !isOpen ? 0 : 1,
-      });
-
-      closeApi.start({
-        y: !isOpen ? -offset : offset,
-        opacity: !isOpen ? 1 : 0,
-      });
-  };
-
-  const ref = useRef();
-
-  // Close the menu and play the dots/menu/close springs back to their
-  // resting state. Used both for outside-clicks and when an item inside the
-  // menu is activated, so the dropdown disappears as soon as the user has
-  // committed to a destination.
   const closeMenu = () => {
-    if (!isOpen) return;
-    open(false);
-    dotsApi.start({ transform: `rotate(0deg)` });
-    handleClick();
+    setIsOpen(false);
+    setDotsRotation(0);
   };
 
   const handleWindowClick = (event) => {
     if (ref.current && !ref.current.contains(event.target)) {
       closeMenu();
     }
+  };
+
+  const toggleMenu = () => {
+    const next = !isOpen;
+    setIsOpen(next);
+    setDotsRotation(next ? 45 : 0);
   };
 
   return (
@@ -68,25 +31,46 @@ const MenuButton = () => {
         onClose={closeMenu}
       />
       <div
-        // Background colors are sourced from theme tokens (bg-brgray ↔
-        // bg-bg-alt) so the button visually adapts to light/dark mode
-        // without keeping a hardcoded hex in component state.
+        role="button"
+        tabIndex={0}
+        aria-expanded={isOpen}
+        aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
         className={`nav_btn_lg py-6 flex items-center justify-center cursor-pointer transition-colors duration-200 ${
           isOpen ? "bg-bg-alt" : "bg-brgray hover:bg-bg-alt"
         }`}
         ref={ref}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onClick={() => {
-          open(!isOpen);
-          handleClick();
+        onMouseEnter={() => !isOpen && setDotsRotation(90)}
+        onMouseLeave={() => !isOpen && setDotsRotation(0)}
+        onClick={toggleMenu}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggleMenu();
+          }
         }}
       >
-        <div className="flex flex-col h-6 items-center justify-center">
-          <a.div style={menu}>MENU&nbsp;&nbsp;</a.div>
-          <a.div style={close}>CLOSE&nbsp;&nbsp;</a.div>
+        <div className="relative flex flex-col h-6 items-center justify-center overflow-hidden">
+          <span
+            className={`absolute whitespace-nowrap transition-all duration-300 ${
+              isOpen ? "-translate-y-3 opacity-0" : "translate-y-0 opacity-100"
+            }`}
+          >
+            MENU&nbsp;&nbsp;
+          </span>
+          <span
+            className={`absolute whitespace-nowrap transition-all duration-300 ${
+              isOpen ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+            }`}
+          >
+            CLOSE&nbsp;&nbsp;
+          </span>
         </div>
-        <a.div style={dots}>•&nbsp;•</a.div>
+        <span
+          className="transition-transform duration-300"
+          style={{ transform: "rotate(" + dotsRotation + "deg)" }}
+        >
+          •&nbsp;•
+        </span>
       </div>
     </>
   );

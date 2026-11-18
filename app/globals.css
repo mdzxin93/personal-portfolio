@@ -1,14 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@font-face {
-  font-family: 'Neue Montreal';
-  src: local('Neue Montreal'), local('PP Neue Montreal'), url('https://fonts.cdnfonts.com/s/91223/PPNeueMontreal-Medium.woff') format('woff');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* ─────────────────────────────────────────────────────────────────────────
    THEME TOKENS
 

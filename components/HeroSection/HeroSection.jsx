@@ -1,70 +1,31 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import gsap from "gsap";
-import { motion } from "framer-motion";
 
 const HeroSection = () => {
-  const sectionRef = useRef(null);
-  const heroVisualRef = useRef(null);
-  const loaderRef = useRef(null);
   const [currentText, setCurrentText] = useState("ಮೊಹಮ್ಮದ್ ಜೈನ್");
+  const [progressStarted, setProgressStarted] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [loaderDone, setLoaderDone] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     document.body.style.overflow = "hidden";
 
-    // Initial hidden state for the hero image reveal.
-    gsap.set(heroVisualRef.current, { autoAlpha: 0, scale: 1.05 });
+    const progressFrame = requestAnimationFrame(() => setProgressStarted(true));
+    const revealTimer = setTimeout(() => setIsRevealed(true), 400);
+    const completeTimer = setTimeout(() => {
+      setLoaderDone(true);
+      document.body.style.overflow = "";
+    }, 1050);
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        document.body.style.overflow = "";
-        if (loaderRef.current) {
-          loaderRef.current.style.display = "none";
-        }
-      },
-    });
-
-    // Match the loader progress to its reveal duration.
-    tl.fromTo(
-      loaderRef.current?.querySelector(".loader-progress-fill"),
-      { scaleX: 0 },
-      { scaleX: 1, duration: 0.75, ease: "none" },
-      "start"
-    );
-
-    // Loader slide up reveal
-    tl.to(
-      loaderRef.current,
-      {
-        y: "-100%",
-        duration: 0.55,
-        ease: "power3.inOut",
-      },
-      "start+=0.4"
-    );
-
-    // Hero image reveal (fade & scale down to 1)
-    tl.to(
-      heroVisualRef.current,
-      {
-        autoAlpha: 1,
-        scale: 1,
-        duration: 0.55,
-        ease: "power2.out",
-      },
-      "start+=0.45"
-    );
-
-    // Timeout-based interactive name transitions in different languages
     const t1 = setTimeout(() => setCurrentText("मोहम्मद ज़ैन"), 900);
     const t2 = setTimeout(() => setCurrentText("MOHAMMED ZAIN"), 1800);
 
     return () => {
-      tl.kill();
+      cancelAnimationFrame(progressFrame);
+      clearTimeout(revealTimer);
+      clearTimeout(completeTimer);
       clearTimeout(t1);
       clearTimeout(t2);
       document.body.style.overflow = "";
@@ -97,65 +58,33 @@ const HeroSection = () => {
     }
   };
 
-  // Framer Motion reveal variants (triggered once loader is finished)
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.15,
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1]
-      }
-    }
-  };
-
   return (
     <>
       {/* Loader Overlay */}
       <div
         id="loader"
-        ref={loaderRef}
         style={{
           backgroundColor: "#111111",
           zIndex: 2147483647,
-          display: "flex",
+          display: loaderDone ? "none" : "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          transform: isRevealed ? "translateY(-100%)" : "translateY(0)",
+          transition: "transform 550ms cubic-bezier(0.76, 0, 0.24, 1)",
         }}
       >
-        <motion.div
-          initial={{ opacity: 0, y: 24, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+        <div
           className="relative z-10 flex w-full max-w-[340px] flex-col items-center justify-center px-6 text-center"
         >
-          <motion.span
-            initial={{ opacity: 0, letterSpacing: "0.35em" }}
-            animate={{ opacity: 1, letterSpacing: "0.22em" }}
-            transition={{ duration: 0.8, delay: 0.15 }}
+          <span
             className="mb-5 text-[9px] font-semibold uppercase text-white/45"
           >
             Personal Portfolio · 2026
-          </motion.span>
+          </span>
 
           {/* Uploaded portrait — framed as the loader's main visual */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+          <div
             className="relative mb-6 h-[190px] w-[174px] overflow-hidden rounded-[26px] border border-white/15 bg-[#24211e] shadow-[0_24px_80px_rgba(0,0,0,0.5)] sm:h-[218px] sm:w-[194px]"
           >
             <Image
@@ -169,20 +98,16 @@ const HeroSection = () => {
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-white/5" />
             <div className="pointer-events-none absolute inset-0 rounded-[26px] ring-1 ring-inset ring-white/10" />
-          </motion.div>
+          </div>
 
           <div className="mb-2 flex h-10 w-full items-center justify-center overflow-hidden">
-            <motion.div
+            <div
               key={currentText}
-              initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -18, filter: "blur(6px)" }}
-              transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
               className="whitespace-nowrap text-[19px] font-bold uppercase tracking-[0.12em] text-[#F5F1EA] sm:text-[22px]"
-              style={{ fontFamily: "'Neue Montreal', 'Inter', sans-serif" }}
+              style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {currentText}
-            </motion.div>
+            </div>
           </div>
 
           <span className="mb-5 text-[9px] font-medium uppercase tracking-[0.24em] text-white/40">
@@ -190,18 +115,23 @@ const HeroSection = () => {
           </span>
 
           <div className="h-[2px] w-36 overflow-hidden rounded-full bg-white/15">
-            <div className="loader-progress-fill h-full w-full origin-left scale-x-0 rounded-full bg-[#F5F1EA]" />
+            <div
+              className="loader-progress-fill h-full w-full origin-left rounded-full bg-[#F5F1EA]"
+              style={{
+                transform: progressStarted ? "scaleX(1)" : "scaleX(0)",
+                transition: "transform 750ms linear",
+              }}
+            />
           </div>
           <span className="mt-3 text-[8px] font-medium uppercase tracking-[0.3em] text-white/35">
             Preparing experience
           </span>
-        </motion.div>
+        </div>
       </div>
 
       {/* Hero Section Container */}
       <section
         id="hero-section"
-        ref={sectionRef}
         className="relative w-full h-[100svh] min-h-[620px] lg:h-screen lg:min-h-[600px] overflow-hidden select-none transition-colors duration-300"
         style={{
           backgroundColor: "var(--color-bg)",
@@ -210,8 +140,12 @@ const HeroSection = () => {
       >
         {/* Static hero image — video playback removed */}
         <div
-          ref={heroVisualRef}
           className="absolute inset-x-3 top-[76px] bottom-3 w-auto h-auto z-0 overflow-hidden bg-black rounded-[28px] border-[6px] border-[#242424] shadow-[0_16px_44px_rgba(0,0,0,0.28)] lg:inset-0 lg:w-full lg:h-full lg:rounded-none lg:border-0 lg:shadow-none"
+          style={{
+            opacity: isRevealed ? 1 : 0,
+            transform: isRevealed ? "scale(1)" : "scale(1.05)",
+            transition: "opacity 550ms ease, transform 550ms ease",
+          }}
         >
           <Image
             src="/hero-section.webp"
@@ -239,57 +173,49 @@ const HeroSection = () => {
         </div>
 
         {/* Content Corner Overlay - Vertically Centered in the Middle-Left */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+        <div
           onClick={(e) => e.stopPropagation()}
           className="absolute bottom-0 top-auto left-0 right-0 translate-y-0 z-[100000] lg:z-10 w-full max-w-none flex flex-col items-start text-left pointer-events-auto bg-transparent backdrop-blur-none px-5 pt-6 pb-14 lg:pb-0 rounded-b-[22px] border-0 lg:top-1/2 lg:bottom-auto lg:-translate-y-1/2 lg:left-[8vw] lg:right-auto lg:w-[min(680px,58vw)] lg:max-w-[680px] lg:bg-transparent lg:backdrop-blur-none lg:p-0 lg:rounded-none lg:border-none"
         >
-          <motion.span
-            variants={itemVariants}
+          <span
             className="text-[9px] sm:text-xs font-semibold tracking-[0.22em] text-white/75 lg:text-fg-muted uppercase mb-2 lg:mb-3"
-            style={{ fontFamily: "'Neue Montreal', 'Inter', sans-serif" }}
+            style={{ fontFamily: "'Inter', sans-serif" }}
           >
             HELLO, I&apos;M ZAIN
-          </motion.span>
+          </span>
           
-          <motion.div
-            variants={itemVariants}
+          <div
             className="hidden lg:flex items-center gap-2 mb-5 sm:mb-6"
           >
             <div className="w-10 h-px bg-fg/40" />
             <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "var(--color-accent)" }} />
-          </motion.div>
+          </div>
           
-          <motion.h1
-            variants={itemVariants}
+          <h1
             className="w-full text-[clamp(1.25rem,6.8vw,1.9rem)] lg:text-[clamp(2.25rem,5.35vw,5.35rem)] font-extrabold uppercase leading-[0.94] lg:leading-[0.98] tracking-[-0.065em] text-white lg:text-fg mb-3 lg:mb-6"
-            style={{ fontFamily: "'AeonikBold', 'Neue Montreal', 'Inter', sans-serif", textWrap: "balance" }}
+            style={{ fontFamily: "'AeonikBold', 'Inter', sans-serif", textWrap: "balance" }}
           >
             <span className="block whitespace-nowrap">Full-Stack</span>
             <span className="block whitespace-nowrap">&amp; AI Enthusiast</span>
             <span className="mt-2 lg:mt-3 block text-[0.58rem] lg:text-[clamp(0.78rem,1.25vw,1.05rem)] font-semibold leading-tight tracking-[0.14em] lg:tracking-[0.2em] text-white/75 lg:text-fg-muted/80">FULL-STACK DEVELOPMENT · AI · TECHNICAL SEO</span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            variants={itemVariants}
+          <p
             className="text-[11px] sm:text-base text-white/80 lg:text-fg-muted leading-[1.5] lg:leading-[1.7] mb-4 lg:mb-8 max-w-[42ch] line-clamp-2 lg:line-clamp-none"
-            style={{ fontFamily: "'Neue Montreal', 'Inter', sans-serif" }}
+            style={{ fontFamily: "'Inter', sans-serif" }}
           >
             I build thoughtful, scalable web experiences and integrate practical AI features into products using modern web technologies and LLM APIs.
-          </motion.p>
+          </p>
 
           {/* View Work & Download CV Buttons */}
-          <motion.div
-            variants={itemVariants}
+          <div
             className="flex items-center gap-4 lg:gap-5"
           >
             <a
               href="#projects-section"
               onClick={handleScrollToWork}
               className="px-4 py-2.5 lg:px-6 lg:py-3 bg-white text-black lg:bg-fg lg:text-bg hover:bg-white/90 lg:hover:bg-fg/90 rounded-full flex items-center gap-2 text-[11px] lg:text-xs font-semibold tracking-wide transition-all duration-200 active:scale-95 shadow-sm"
-              style={{ fontFamily: "'Neue Montreal', 'Inter', sans-serif" }}
+              style={{ fontFamily: "'Inter', sans-serif" }}
             >
               <span>View My Work</span>
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -302,7 +228,7 @@ const HeroSection = () => {
               href="/Zain-Resume.pdf"
               download="Zain-Resume.pdf"
               className="text-[11px] lg:text-xs font-semibold text-white lg:text-fg hover:text-white/80 lg:hover:text-fg/80 flex items-center gap-1.5 pb-0.5 border-b border-current transition-all"
-              style={{ fontFamily: "'Neue Montreal', 'Inter', sans-serif" }}
+              style={{ fontFamily: "'Inter', sans-serif" }}
             >
               <span>Download CV</span>
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -310,11 +236,10 @@ const HeroSection = () => {
                 <polyline points="19 12 12 19 5 12"/>
               </svg>
             </a>
-          </motion.div>
+          </div>
 
           {/* Social Links on Bottom-Left */}
-          <motion.div
-            variants={itemVariants}
+          <div
             className="flex items-center gap-4 sm:gap-5 mt-5 lg:mt-8 text-white/85 lg:text-fg/60"
           >
             <a href="https://github.com/mdzxin93" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub" className="inline-flex h-10 w-10 items-center justify-center rounded-full hover:text-fg transition-colors">
@@ -329,8 +254,8 @@ const HeroSection = () => {
             <a href="https://wa.me/917975788275" target="_blank" rel="noopener noreferrer" title="WhatsApp" aria-label="WhatsApp" className="inline-flex h-10 w-10 items-center justify-center rounded-full hover:text-fg transition-colors">
               <svg viewBox="0 0 24 24" className="w-5 h-5 lg:w-4 lg:h-4 fill-current"><path d="M17.472 14.382c-.301-.15-1.78-.878-2.056-.979-.276-.1-.476-.15-.676.15-.2.301-.777.98-.953 1.18-.175.2-.351.226-.652.075-.301-.15-1.272-.468-2.423-1.495-.895-.798-1.5-1.785-1.676-2.086-.176-.301-.019-.464.132-.614.136-.135.301-.351.452-.527.15-.176.2-.301.301-.502.1-.2.05-.376-.025-.527-.075-.15-.677-1.633-.927-2.236-.244-.587-.493-.507-.677-.517-.176-.01-.376-.01-.577-.01-.2 0-.527.075-.803.376s-1.054 1.03-1.054 2.511 1.079 2.913 1.23 3.114c.15.2 2.123 3.243 5.143 4.545.719.31 1.28.496 1.717.635.722.23 1.379.197 1.899.12.579-.087 1.78-.728 2.031-1.431.25-.703.25-1.305.175-1.431-.075-.126-.276-.201-.577-.352zm-5.466 7.618h-.005a10.02 10.02 0 0 1-5.112-1.396l-.367-.218-3.799.996 1.014-3.702-.239-.38a10.028 10.028 0 0 1-1.536-5.32c0-5.539 4.507-10.045 10.05-10.045 2.684.001 5.207 1.047 7.106 2.946a10.007 10.007 0 0 1 2.945 7.105c-.002 5.54-4.508 10.046-10.046 10.046zm8.525-18.57A11.94 11.94 0 0 0 12.006 0C5.385 0 .003 5.382.003 12.003c0 2.112.551 4.174 1.6 5.993L0 24l6.173-1.619a11.97 11.97 0 0 0 5.833 1.508h.005c6.621 0 12.003-5.382 12.003-12.003a11.94 11.94 0 0 0-3.489-8.459z"/></svg>
             </a>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
       </section>
     </>

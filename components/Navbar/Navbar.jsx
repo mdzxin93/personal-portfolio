@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { animated, useSpring } from "@react-spring/web";
 import { Trail } from "./TrailText";
 
 import LetsTalk from "./LetsTalk";
@@ -46,10 +45,7 @@ import { usePathname } from "next/navigation";
 
 function Navbar() {
   const pathname = usePathname();
-  const [rotate, setRotate] = useSpring(() => ({
-    transform: `rotate(0deg)`,
-    config: { tension: 300, friction: 20, mass: 1 },
-  }));
+  const [rotate, setRotate] = useState(0);
 
   const [open, set] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -111,11 +107,12 @@ function Navbar() {
   const handleMobileNav = (e, target) => {
     if (pathname !== "/") {
       setMobileOpen(false);
+      setRotate(0);
       return;
     }
     e.preventDefault();
     setMobileOpen(false);
-    setRotate({ transform: "rotate(0deg)" });
+    setRotate(0);
     // Give the overlay a frame to close before scrolling so the user
     // sees the motion rather than a jumpy pre-scroll flash.
     setTimeout(() => scrollToSection(target), 50);
@@ -161,17 +158,17 @@ function Navbar() {
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             className="nav_btn_sm flex items-center justify-center cursor-pointer"
-            onMouseEnter={() => !mobileOpen && setRotate({ transform: "rotate(90deg)" })}
-            onMouseLeave={() => !mobileOpen && setRotate({ transform: "rotate(0deg)" })}
+            onMouseEnter={() => !mobileOpen && setRotate(90)}
+            onMouseLeave={() => !mobileOpen && setRotate(0)}
             onClick={() => {
               const next = !mobileOpen;
               setMobileOpen(next);
-              setRotate({ transform: next ? "rotate(45deg)" : "rotate(0deg)" });
+              setRotate(next ? 45 : 0);
             }}
           >
-            <animated.div className="text-[0.55rem] leading-none" style={rotate}>
+            <div className="text-[0.55rem] leading-none transition-transform duration-300" style={{ transform: "rotate(" + rotate + "deg)" }}>
               {mobileOpen ? "✕" : "⬤ ⬤"}
-            </animated.div>
+            </div>
           </button>
         </div>
       </div>
@@ -188,7 +185,7 @@ function Navbar() {
           className="absolute inset-0 bg-bg"
           onClick={() => {
             setMobileOpen(false);
-            setRotate({ transform: "rotate(0deg)" });
+            setRotate(0);
           }}
         />
         <div className="relative z-10 h-full w-full flex flex-col pt-24 pb-8 px-6">

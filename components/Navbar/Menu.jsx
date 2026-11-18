@@ -1,28 +1,15 @@
-import { useSpring, a } from "@react-spring/web";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
-// Real contact info — kept in sync with `Contact`, `SiteFooter`, and
-// `LetsTalk`. Update all four if these ever change.
-const EMAIL = "mohammedkhasiminfo@gmail.com";
 const WHATSAPP_URL = "https://wa.me/917975788275";
-const TELEGRAM_URL = "https://t.me/+917975788275";
 
-// Smoothly scrolls to a section by id. Uses the active Lenis instance
-// (exposed by SmoothScroll on `window.__lenis`) when available, so the
-// motion is consistent with every other scroll on the site. Falls back to
-// the browser's native smooth scrollIntoView if Lenis isn't ready yet
-// (e.g. during SSR hydration).
 const scrollToSection = (id) => {
-  if (typeof window === "undefined") return;
   const target = id === "top" ? 0 : document.getElementById(id);
   if (target == null) return;
 
   const lenis = window.__lenis;
   if (lenis && typeof lenis.scrollTo === "function") {
     lenis.scrollTo(target, { offset: 0, duration: 1.4 });
-    return;
-  }
-  if (target === 0) {
+  } else if (target === 0) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   } else {
     target.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -30,62 +17,19 @@ const scrollToSection = (id) => {
 };
 
 const Menu = ({ open, onOutsideClick, onClose }) => {
-  const ref = useRef();
-  const handleChildClick = (event) => {
-    if (ref.current && !ref.current.contains(event.target)) {
-      onOutsideClick(event);
-    }
-  };
+  const ref = useRef(null);
 
   useEffect(() => {
-    document.addEventListener("click", handleChildClick);
-    return () => {
-      document.removeEventListener("click", handleChildClick);
+    const handleDocumentClick = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        onOutsideClick?.(event);
+      }
     };
-  }, []);
 
-  const [contents, contentsApi] = useSpring(() => ({
-    from: { y: 100, opacity: 0, transform: "rotate(20deg)" },
-  }));
+    document.addEventListener("click", handleDocumentClick);
+    return () => document.removeEventListener("click", handleDocumentClick);
+  }, [onOutsideClick]);
 
-  const [news, newsApi] = useSpring(() => ({
-    from: { y: 100, opacity: 0, transform: "rotate(-20deg)" },
-  }));
-  const [isMounted, setIsMounted] = useState(open);
-  useEffect(() => {
-    let timer;
-    if (!open) {
-      timer = setTimeout(() => {
-        setIsMounted(false);
-      }, 500);
-    } else {
-      setIsMounted(true);
-    }
-
-    contentsApi.start({
-      y: open ? 0 : 100,
-      opacity: open ? 1 : 0,
-      transform: open ? `rotate(0deg)` : `rotate(20deg)`,
-    });
-
-    newsApi.start({
-      y: open ? 0 : 100,
-      opacity: open ? 1 : 0,
-      transform: open ? `rotate(0deg)` : `rotate(-20deg)`,
-    });
-
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [open, contentsApi, newsApi]);
-
-  // Every entry maps to a real section that already exists on the home
-  // page. The site is single-page, so these never navigate — they smooth
-  // scroll the user to the matching anchor through Lenis.
-  //
-  // `target: "top"` is a sentinel for "scroll to the very top of the
-  // document" (the hero) since the hero owns the first viewport without
-  // needing a separate offset.
   const navItems = [
     { label: "HOME", target: "top" },
     { label: "ABOUT", target: "about" },
@@ -93,75 +37,69 @@ const Menu = ({ open, onOutsideClick, onClose }) => {
     { label: "CONTACT", target: "contact-section" },
   ];
 
-  const handleNavClick = (e, target) => {
-    e.preventDefault();
+  const handleNavClick = (event, target) => {
+    event.preventDefault();
     scrollToSection(target);
-    if (typeof onClose === "function") onClose();
+    onClose?.();
   };
 
-  return (
-    <>
-      {isMounted && (
-        <div
-          className="absolute top-[4rem] right-0 w-[20rem] "
-          ref={ref}
-        >
-          {/* Site navigation — smooth scroll, never redirect */}
-          <a.div
-            className="rounded-xl bg-bg-alt text-fg flex flex-col font-Aeonik text-3xl p-8"
-            style={contents}
-          >
-            {navItems.map((item, i) => (
-              <a
-                key={item.target}
-                href={item.target === "top" ? "#" : `#${item.target}`}
-                onClick={(e) => handleNavClick(e, item.target)}
-                className={`flex items-center justify-between transition-colors duration-200 hover:text-brblue cursor-pointer ${
-                  i === 0 ? "pb-3" : i === navItems.length - 1 ? "pt-3" : "py-3"
-                }`}
-              >
-                <span>{item.label}</span>
-                <span className="text-fg-muted">•</span>
-              </a>
-            ))}
-          </a.div>
+  const panelMotion = open
+    ? "translate-y-0 rotate-0 opacity-100 visible"
+    : "translate-y-8 rotate-[8deg] opacity-0 invisible pointer-events-none";
 
-          {/* Get in touch — replaces the old newsletter form so the menu
-              actually reflects what the site offers. Both buttons reuse the
-              same handles already used in the Contact section and Footer. */}
-          <a.div
-            className="rounded-xl bg-bg-alt text-fg flex flex-col p-8 my-2"
-            style={news}
+  return (
+    <div
+      className={`absolute top-[4rem] right-0 w-[20rem] origin-top-right transition-all duration-500 ease-out ${panelMotion}`}
+      ref={ref}
+      aria-hidden={!open}
+    >
+      <div className="rounded-xl bg-bg-alt text-fg flex flex-col font-Aeonik text-3xl p-8">
+        {navItems.map((item, index) => (
+          <a
+            key={item.target}
+            href={item.target === "top" ? "#" : `#${item.target}`}
+            onClick={(event) => handleNavClick(event, item.target)}
+            tabIndex={open ? 0 : -1}
+            className={`flex items-center justify-between transition-colors duration-200 hover:text-brblue cursor-pointer ${
+              index === 0 ? "pb-3" : index === navItems.length - 1 ? "pt-3" : "py-3"
+            }`}
           >
-            <div className="font-Aeonik text-3xl leading-tight">
-              Got an idea?
-              <br />
-              Let&apos;s talk.
-            </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <a
-                href="#contact-section"
-                onClick={() => onClose && onClose()}
-                className="flex items-center justify-between bg-fg text-bg rounded-xl px-4 py-3 text-sm tracking-widest font-semibold transition-transform duration-200 hover:-translate-y-0.5"
-              >
-                <span>GET IN TOUCH</span>
-                <span aria-hidden="true">↗</span>
-              </a>
-              <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => onClose && onClose()}
-                className="flex items-center justify-between border-2 border-fg text-fg rounded-xl px-4 py-3 text-sm tracking-widest font-semibold transition-colors duration-200 hover:bg-accent-soft"
-              >
-                <span>WHATSAPP</span>
-                <span aria-hidden="true">↗</span>
-              </a>
-            </div>
-          </a.div>
+            <span>{item.label}</span>
+            <span className="text-fg-muted">•</span>
+          </a>
+        ))}
+      </div>
+
+      <div className="rounded-xl bg-bg-alt text-fg flex flex-col p-8 my-2">
+        <div className="font-Aeonik text-3xl leading-tight">
+          Got an idea?
+          <br />
+          Let&apos;s talk.
         </div>
-      )}
-    </>
+        <div className="flex flex-col gap-2 mt-5">
+          <a
+            href="#contact-section"
+            tabIndex={open ? 0 : -1}
+            onClick={() => onClose?.()}
+            className="flex items-center justify-between bg-fg text-bg rounded-xl px-4 py-3 text-sm tracking-widest font-semibold transition-transform duration-200 hover:-translate-y-0.5"
+          >
+            <span>GET IN TOUCH</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noreferrer"
+            tabIndex={open ? 0 : -1}
+            onClick={() => onClose?.()}
+            className="flex items-center justify-between border-2 border-fg text-fg rounded-xl px-4 py-3 text-sm tracking-widest font-semibold transition-colors duration-200 hover:bg-accent-soft"
+          >
+            <span>WHATSAPP</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
   );
 };
 

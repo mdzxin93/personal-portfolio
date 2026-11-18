@@ -1,40 +1,16 @@
 import React from "react";
-import { useSpring, animated } from "@react-spring/web";
 
-// Same address used in `Contact` and `SiteFooter`. If any of these change,
-// keep all three places in sync.
-const EMAIL = "mohammedkhasiminfo@gmail.com";
-
-// "LET'S TALK" was previously a non-interactive div. It now opens the user's
-// mail client straight to the real contact email — which is also wired up
-// in the contact section and the footer.
 const LetsTalk = () => {
-  const [springs, api] = useSpring(() => ({
-    from: { x: 0 },
-    x: -10,
-  }));
-
-  const [opacitySprings, opacityApi] = useSpring(() => ({
-    opacity: 1,
-    x: 0,
-  }));
-
-  const [opacitySpringsReverse, opacityApiReverse] = useSpring(() => ({
-    opacity: 0,
-    x: -10,
-  }));
-
-  const handleClick = (e) => {
-    e.preventDefault();
-    if (typeof window === "undefined") return;
+  const handleClick = (event) => {
+    event.preventDefault();
     const target = document.getElementById("contact-section");
-    if (target) {
-      const lenis = window.__lenis;
-      if (lenis && typeof lenis.scrollTo === "function") {
-        lenis.scrollTo(target, { offset: 0, duration: 1.4 });
-      } else {
-        target.scrollIntoView({ behavior: "smooth" });
-      }
+    if (!target) return;
+
+    const lenis = window.__lenis;
+    if (lenis && typeof lenis.scrollTo === "function") {
+      lenis.scrollTo(target, { offset: 0, duration: 1.4 });
+    } else {
+      target.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -42,22 +18,18 @@ const LetsTalk = () => {
     <a
       href="#contact-section"
       onClick={handleClick}
-      aria-label="Contact Section"
-      className="nav_btn_lg nav_btn_dark flex items-center justify-center hover:bg-brblue py-6 cursor-pointer"
-      onMouseEnter={() => {
-        api.start({ x: 20 });
-        opacityApi.start({ opacity: 0, x: 5 });
-        opacityApiReverse.start({ opacity: 1, x: 3 });
-      }}
-      onMouseLeave={() => {
-        api.start({ x: 0 });
-        opacityApi.start({ opacity: 1, x: 0 });
-        opacityApiReverse.start({ opacity: 0, x: -10 });
-      }}
+      aria-label="Contact section"
+      className="group relative nav_btn_lg nav_btn_dark flex items-center justify-center gap-2 overflow-hidden py-6 cursor-pointer hover:bg-brblue"
     >
-      <animated.span style={opacitySpringsReverse} className="opacity-0">➔</animated.span>
-      <animated.span style={springs}>LET&apos;S TALK &nbsp;</animated.span>
-      <animated.span style={opacitySprings}>&nbsp;•&nbsp;</animated.span>
+      <span className="transition-transform duration-300 group-hover:-translate-x-1">
+        LET&apos;S TALK
+      </span>
+      <span className="transition-opacity duration-300 group-hover:opacity-0">
+        &nbsp;•&nbsp;
+      </span>
+      <span className="absolute right-6 translate-x-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" aria-hidden="true">
+        →
+      </span>
     </a>
   );
 };
