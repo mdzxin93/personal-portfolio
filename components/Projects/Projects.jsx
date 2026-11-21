@@ -161,6 +161,8 @@ const VENTURES = [
   },
   {
     name: "OilFlow",
+    href: "https://github.com/mdzxin93/oilflow",
+    caseStudyHref: "/work/oilflow",
     role: "Collection & Trading Management",
     caseStudyHref: "/work/oilflow",
     kind: "BUSINESS OPERATIONS",
@@ -169,13 +171,14 @@ const VENTURES = [
   {
     name: "Moped Momos",
     role: "Restaurant Ordering & Kitchen Workflow",
-    href: "https://moped-momos-app.preview.emergentagent.com",
+    href: "https://github.com/mdzxin93/moped-momos",
     caseStudyHref: "/work/moped-momos",
     kind: "MOBILE APPLICATION",
     note: "A mobile-first counter ordering experience with separate admin and kitchen workflows.",
   },
   {
     name: "AgriMap",
+    href: "https://github.com/mdzxin93/agrimap",
     role: "Agricultural GIS Desktop Prototype",
     caseStudyHref: "/work/agrimap",
     kind: "GIS & LAND ANALYSIS",
