@@ -17,7 +17,7 @@ const HeroSection = () => {
     const completeTimer = setTimeout(() => {
       setLoaderDone(true);
       document.body.style.overflow = "";
-    }, 1050);
+    }, 1250);
 
     return () => {
       cancelAnimationFrame(progressFrame);
@@ -114,7 +114,7 @@ const HeroSection = () => {
               className="loader-progress-fill h-full w-full origin-left rounded-full bg-[#F5F1EA]"
               style={{
                 transform: progressStarted ? "scaleX(1)" : "scaleX(0)",
-                transition: "transform 750ms linear",
+                transition: "transform 950ms linear",
               }}
             />
           </div>
