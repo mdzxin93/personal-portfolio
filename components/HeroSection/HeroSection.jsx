@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 const HeroSection = () => {
-  const [currentText, setCurrentText] = useState("ಮೊಹಮ್ಮದ್ ಜೈನ್");
+  const [currentText, setCurrentText] = useState("MOHAMMED ZAIN");
   const [progressStarted, setProgressStarted] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
@@ -19,15 +19,10 @@ const HeroSection = () => {
       document.body.style.overflow = "";
     }, 1050);
 
-    const t1 = setTimeout(() => setCurrentText("मोहम्मद ज़ैन"), 900);
-    const t2 = setTimeout(() => setCurrentText("MOHAMMED ZAIN"), 1800);
-
     return () => {
       cancelAnimationFrame(progressFrame);
       clearTimeout(revealTimer);
       clearTimeout(completeTimer);
-      clearTimeout(t1);
-      clearTimeout(t2);
       document.body.style.overflow = "";
     };
   }, []);
@@ -152,7 +147,7 @@ const HeroSection = () => {
             alt="Mohammed Zain — portfolio hero"
             fill
             priority
-            sizes="100vw"
+            sizes="(max-width: 1023px) 320vw, 100vw"
             className="hero-background-media object-cover object-[66%_28%] lg:object-[46%_center]"
           />
 
