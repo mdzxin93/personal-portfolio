@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 const HeroSection = () => {
-  const [currentText, setCurrentText] = useState("MOHAMMED ZAIN");
+  const currentText = "MOHAMMED ZAIN";
   const [progressStarted, setProgressStarted] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
