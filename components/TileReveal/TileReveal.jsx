@@ -12,108 +12,51 @@ const DEFAULT_VIDEOS = [
   "/15410984_2160_3840_60fps%20(1).mp4",
 ];
 
-const VideoTile = ({ src, index }) => {
+const VideoTile = ({ src }) => {
   const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  const getVideo = () => {
-    const video = videoRef.current;
-    if (!video) return null;
-    // Keep every large video completely off the network until the visitor
-    // explicitly interacts with its tile.
-    if (!video.hasAttribute("src")) {
-      video.src = src;
-      video.load();
-    }
-    return video;
-  };
-
-  const handleMouseEnter = () => {
-    if (window.matchMedia("(hover: none)").matches) return;
-    const video = getVideo();
-    if (!video) return;
-    setIsPlaying(true);
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // Handled cleanly if rapid pointer movement triggers interruption
-      });
-    }
-  };
-
-  const handleMouseLeave = () => {
+  useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    setIsPlaying(false);
-    video.pause();
-  };
 
-  const handleTouch = () => {
-    const video = getVideo();
-    if (!video) return;
-    if (video.paused) {
-      setIsPlaying(true);
+    let loaded = false;
+    const startPreview = () => {
+      if (!loaded) {
+        video.src = src;
+        video.load();
+        loaded = true;
+      }
       video.play().catch(() => {});
-    } else {
-      setIsPlaying(false);
-      video.pause();
-    }
-  };
+    };
+    const stopPreview = () => video.pause();
 
-  const handleLoadedMetadata = (e) => {
-    if (e.target.currentTime === 0) {
-      try {
-        e.target.currentTime = 0.05;
-      } catch (_) {}
-    }
-  };
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) startPreview();
+      else stopPreview();
+    }, { threshold: 0.15, rootMargin: "120px" });
+
+    observer.observe(video);
+    return () => {
+      observer.disconnect();
+      stopPreview();
+      video.removeAttribute("src");
+      video.load();
+    };
+  }, [src]);
 
   return (
     <div className="tile">
-      <div
-        className={`tile-inner ${isPlaying ? "tile-inner--playing" : ""}`}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onClick={handleTouch}
-      >
+      <div className="tile-inner">
         <video
           ref={videoRef}
-          data-src={src}
           muted
           loop
           playsInline
+          autoPlay
           preload="none"
-          poster="/video_frame_preview.jpg"
           className="tile-video"
-          onLoadedMetadata={handleLoadedMetadata}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
+          aria-label="Silent looping video preview"
         />
-
-        <div
-          className={`tile-play-indicator ${
-            isPlaying ? "tile-play-indicator--hidden" : ""
-          }`}
-          aria-hidden="true"
-        >
-          <div className="tile-play-btn">
-            <svg
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              fill="currentColor"
-            >
-              <polygon points="6 3 20 12 6 21 6 3" />
-            </svg>
-          </div>
-        </div>
-
-        {isPlaying && (
-          <div className="tile-badge-playing" aria-hidden="true">
-            <span className="tile-badge-dot" />
-            <span>PLAYING</span>
-          </div>
-        )}
       </div>
     </div>
   );

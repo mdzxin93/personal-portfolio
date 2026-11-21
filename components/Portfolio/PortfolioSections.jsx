@@ -2,7 +2,6 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { engineeringProjects } from "@/app/work/projects";
-import HorizontalScroll from "@/components/HorizontalScroll/HorizontalScroll";
 
 const Arrow = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -46,7 +45,7 @@ export default function PortfolioSections() {
             <Link className="case-study-card" href={`/work/${project.slug}`} key={project.slug}>
               <div className="case-study-card__visual">
                 {project.image ? (
-                  <Image src={project.image} alt={`${project.name} project interface preview`} fill sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw" quality={78} />
+                  <Image src={project.image} alt={`${project.name} project interface preview`} fill sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw" quality={82} unoptimized priority />
                 ) : (
                   <div className="case-study-card__placeholder">
                     <span>PROJECT / {project.number}</span>
@@ -98,9 +97,6 @@ export default function PortfolioSections() {
           ))}
         </div>
       </section>
-
-      {/* Place the production headline directly after the evidence metrics. */}
-      <HorizontalScroll />
     </div>
   );
 }
