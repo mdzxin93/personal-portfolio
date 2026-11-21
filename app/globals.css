@@ -24,20 +24,20 @@
 :root,
 [data-theme="light"] {
   --font-inter: 'Inter', sans-serif;
-  --color-bg: #F9F8FF;
-  --color-bg-alt: #ffffff;
-  --color-text: #060607;
-  --color-text-muted: #555555;
-  --color-text-subtle: #888888;
-  --color-accent: #0016EC;
-  --color-accent-soft: #D9E6FF;
-  --color-border: #D9E6FF;
-  --color-btn-dark-bg: #2B2E3A;
-  --color-btn-dark-text: #D4D5D7;
-  --color-btn-light-bg: #E3E5EE;
-  --color-btn-light-text: #2B2E3A;
-  --color-btn-sm-bg: #E4E6EF;
-  --hero-video-blend: multiply;
+  --color-bg: #0A0A0C;
+  --color-bg-alt: #131318;
+  --color-text: #F9F8FF;
+  --color-text-muted: #A8A8AE;
+  --color-text-subtle: #6E6E76;
+  --color-accent: #4A83FF;
+  --color-accent-soft: #1B2540;
+  --color-border: #1F2942;
+  --color-btn-dark-bg: #F9F8FF;
+  --color-btn-dark-text: #060607;
+  --color-btn-light-bg: #1F2942;
+  --color-btn-light-text: #F9F8FF;
+  --color-btn-sm-bg: #1F2942;
+  --hero-video-blend: screen;
 }
 
 [data-theme="dark"] {
@@ -65,9 +65,14 @@
 }
 
 html, body {
-  overscroll-behavior: none;
-  overflow-x: hidden;
+  /* Keep the document as the native vertical scroll container on touch devices.
+     Clip horizontal overflow without turning the root into a hidden overflow
+     scroller (which can prevent page swipes on mobile Safari). */
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
+  overflow-x: clip;
   width: 100%;
+  touch-action: pan-y pinch-zoom;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -97,7 +102,13 @@ body::-webkit-scrollbar {
 }
 
 html {
+  min-height: 100%;
+  overflow-y: auto;
   scrollbar-width: none;
+}
+
+body {
+  min-height: 100%;
 }
 
 .nav_btn_lg{
@@ -2497,11 +2508,13 @@ html {
 .case-tags { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; }
 .case-tags span { padding: 9px 12px; border: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 11px; }
 .case-solution { display: grid; grid-template-columns: .55fr 1fr; gap: 40px; }
-.case-gallery__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 28px; }
-.case-gallery__grid > div { min-width: 0; min-height: 150px; display: flex; flex-direction: column; gap: 12px; padding: 12px; border: 1px solid var(--color-border); background: var(--color-bg-alt); }
-.case-gallery__grid img { width: 100%; height: 150px; object-fit: contain; }
-.case-gallery__grid span { min-height: 150px; display: grid; place-items: center; color: var(--color-text-subtle); font-size: 10px; text-align: center; }
-.case-gallery__grid strong { font-size: 11px; font-weight: 500; }
+.case-gallery__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+.case-gallery__item { min-width: 0; margin: 0; padding: 12px; border: 1px solid var(--color-border); background: var(--color-bg-alt); }
+.case-gallery__grid img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain; background: #090909; }
+.case-gallery__item figcaption { display: flex; flex-direction: column; gap: 6px; padding: 12px 2px 2px; }
+.case-gallery__grid strong { font-size: 12px; font-weight: 500; }
+.case-gallery__grid figcaption span, .case-gallery__pending { color: var(--color-text-subtle); font-size: 10px; line-height: 1.5; }
+.case-gallery__pending { grid-column: 1 / -1; padding: 24px; border: 1px solid var(--color-border); }
 .case-stage-note { margin-top: 22px; font-size: 11px !important; }
 .case-footer { max-width: 1500px; margin: 0 auto; padding: 36px 0; display: flex; justify-content: space-between; gap: 16px; }
 

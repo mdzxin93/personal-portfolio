@@ -22,6 +22,31 @@ const Arrow = () => (
   </svg>
 );
 
+const DEMONSTRATION_VISUALS = {
+  oilflow: [
+    { src: "/images/projects/oilflow-project.png", label: "OilFlow · Admin dashboard", alt: "OilFlow running admin dashboard", verified: true },
+  ],
+  "moped-momos": [
+    { src: "/images/projects/moped-momos-project.png", label: "Moped Momos · Admin order desk", alt: "Moped Momos admin order desk", verified: true },
+    { src: "/images/case-studies/moped-kitchen.png", label: "Moped Momos · Kitchen queue", alt: "Moped Momos kitchen order queue", verified: true },
+  ],
+  agrimap: [
+    { src: "/images/projects/agrimap-project.png", label: "AgriMap · Desktop dashboard", alt: "AgriMap desktop GIS dashboard with synthetic field data", verified: true },
+  ],
+  "titan-watches-voice-analysis": [
+    { src: "/images/case-studies/titan-dashboard.png", label: "Titan Watches · Operations dashboard", alt: "Titan Watches operations dashboard", verified: true },
+    { src: "/images/case-studies/titan-storefront.png", label: "Titan Watches · Product storefront", alt: "Titan Watches product storefront", verified: true },
+    { src: "/images/case-studies/titan-inbox.png", label: "Titan Watches · Customer inbox", alt: "Titan Watches customer inbox", verified: true },
+    { src: "/images/case-studies/titan-orders.png", label: "Titan Watches · Order management", alt: "Titan Watches order management screen", verified: true },
+  ],
+  autoeditor: [
+    { src: "/images/projects/autoeditor-project.png", label: "AutoEditor · Existing project visual", alt: "AutoEditor project interface preview", verified: false },
+  ],
+  cloudnas: [
+    { src: "/images/projects/cloudnas-project.png", label: "CloudNAS · Existing project visual", alt: "CloudNAS project interface preview", verified: false },
+  ],
+};
+
 export default function ProjectCaseStudy({ params }) {
   const project = getEngineeringProject(params.slug);
   if (!project) notFound();
@@ -94,9 +119,13 @@ export default function ProjectCaseStudy({ params }) {
           <span className="portfolio-eyebrow">08 / DEMONSTRATION</span>
           <h2>Product visuals & walkthrough.</h2>
           <div className="case-gallery__grid">
-            <div>{project.image ? <Image src={project.image} alt={`${project.name} project screenshot`} width={1200} height={800} sizes="(max-width: 700px) 100vw, 50vw" quality={80} /> : <span>Desktop screenshot not supplied</span>}<strong>Desktop interface</strong></div>
-            <div><span>Mobile screenshot not supplied</span><strong>Mobile interface</strong></div>
-            <div><span>Video walkthrough not supplied</span><strong>Product walkthrough</strong></div>
+            {(DEMONSTRATION_VISUALS[project.slug] || (project.image ? [{ src: project.image, label: "Project preview", alt: project.name + " project preview", verified: false }] : [])).map((visual) => (
+              <figure className="case-gallery__item" key={visual.src}>
+                <Image src={visual.src} alt={visual.alt} width={1600} height={1000} sizes="(max-width: 700px) 100vw, 50vw" quality={85} />
+                <figcaption><strong>{visual.label}</strong>{!visual.verified && <span>Existing project preview · fresh runtime capture pending</span>}</figcaption>
+              </figure>
+            ))}
+            {!DEMONSTRATION_VISUALS[project.slug] && !project.image && <p className="case-gallery__pending">A verified application screenshot is not available yet.</p>}
           </div>
           <p className="case-stage-note">{project.stageNote}</p>
         </section>
