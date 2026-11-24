@@ -3,6 +3,7 @@ import React from "react";
 const LetsTalk = () => {
   const handleClick = (event) => {
     event.preventDefault();
+    if (typeof window === "undefined") return;
     const target = document.getElementById("contact-section");
     if (!target) return;
 

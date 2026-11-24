@@ -4,6 +4,7 @@ import '@fontsource/inter/500.css'
 import '@fontsource/inter/600.css'
 import '@fontsource/inter/700.css'
 import '@fontsource/inter/800.css'
+import Script from 'next/script'
 import './globals.css'
 
 export const metadata = {
@@ -15,19 +16,16 @@ export const metadata = {
   },
 }
 
-// Tiny script that runs synchronously before the body paints. It reads the
-// theme the user previously picked from localStorage and applies the
-// corresponding `data-theme` attribute on the <html> element. Without this,
-// the page would flash the default light theme for one frame on every reload
-// when the user is using dark mode. Default is light when nothing is saved.
+// Apply the dark theme before the first paint. A visitor's explicit light
+// selection is preserved, while new visitors start in dark mode.
 const themeBootstrap = `
 (function () {
   try {
     var saved = localStorage.getItem('theme');
-    var theme = saved === 'dark' ? 'dark' : 'light';
+    var theme = saved === 'light' ? 'light' : 'dark';
     document.documentElement.dataset.theme = theme;
   } catch (e) {
-    document.documentElement.dataset.theme = 'light';
+    document.documentElement.dataset.theme = 'dark';
   }
 })();
 `;
@@ -35,10 +33,12 @@ const themeBootstrap = `
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="light" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
-      </head>
-      <body>{children}</body>
+      <body>
+        <Script id="theme-bootstrap" strategy="beforeInteractive">
+          {themeBootstrap}
+        </Script>
+        {children}
+      </body>
     </html>
   )
 }
