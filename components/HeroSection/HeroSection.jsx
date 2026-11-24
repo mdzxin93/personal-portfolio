@@ -13,11 +13,11 @@ const HeroSection = () => {
     document.body.style.overflow = "hidden";
 
     const progressFrame = requestAnimationFrame(() => setProgressStarted(true));
-    const revealTimer = setTimeout(() => setIsRevealed(true), 200);
+    const revealTimer = setTimeout(() => setIsRevealed(true), 900);
     const completeTimer = setTimeout(() => {
       setLoaderDone(true);
       document.body.style.overflow = "";
-    }, 750);
+    }, 1750);
 
     return () => {
       cancelAnimationFrame(progressFrame);
@@ -66,7 +66,7 @@ const HeroSection = () => {
           alignItems: "center",
           justifyContent: "center",
           transform: isRevealed ? "translateY(-100%)" : "translateY(0)",
-          transition: "transform 300ms cubic-bezier(0.76, 0, 0.24, 1)",
+          transition: "transform 550ms cubic-bezier(0.76, 0, 0.24, 1)",
         }}
       >
         <div
@@ -83,12 +83,13 @@ const HeroSection = () => {
             className="relative mb-6 h-[190px] w-[174px] overflow-hidden rounded-[26px] border border-white/15 bg-[#24211e] shadow-[0_24px_80px_rgba(0,0,0,0.5)] sm:h-[218px] sm:w-[194px]"
           >
             <Image
-              src="/about-portrait.webp"
+              src="/about-portrait.png"
               alt="Mohammed Zain"
               fill
               priority
               fetchPriority="high"
-              sizes="174px"
+              quality={95}
+              sizes="(max-width: 640px) 174px, 194px"
               className="object-cover object-[center_28%]"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-white/5" />
@@ -114,7 +115,7 @@ const HeroSection = () => {
               className="loader-progress-fill h-full w-full origin-left rounded-full bg-[#F5F1EA]"
               style={{
                 transform: progressStarted ? "scaleX(1)" : "scaleX(0)",
-                transition: "transform 450ms linear",
+                transition: "transform 1450ms linear",
               }}
             />
           </div>
@@ -139,15 +140,16 @@ const HeroSection = () => {
           style={{
             opacity: isRevealed ? 1 : 0,
             transform: isRevealed ? "scale(1)" : "scale(1.05)",
-            transition: "opacity 300ms ease, transform 300ms ease",
+            transition: "opacity 700ms ease, transform 700ms ease",
           }}
         >
           <Image
-            src="/hero-section.webp"
+            src="/hero-section.png"
             alt="Mohammed Zain — portfolio hero"
             fill
             priority
-            sizes="(max-width: 1023px) 320vw, 100vw"
+            quality={90}
+            sizes="(max-width: 1023px) calc(100vw - 24px), 100vw"
             className="hero-background-media object-cover object-[66%_28%] lg:object-[46%_center]"
           />
 
