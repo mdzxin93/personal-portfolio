@@ -1,0 +1,12 @@
+﻿# Netlify configuration
+# Cache optimized tile-reveal videos and posters aggressively (filenames are content-specific)
+[[headers]]
+  for = "/videos/thousand-edits/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# General video assets
+[[headers]]
+  for = "*.mp4"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"

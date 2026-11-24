@@ -4,36 +4,74 @@ import React, { useEffect, useRef, useState } from "react";
 import "./TileReveal.css";
 
 const DEFAULT_VIDEOS = [
-  "/videos/thousand-edits/01-whatsapp-2026-11-21-17-52-13.mp4",
-  "/videos/thousand-edits/02-whatsapp-2026-11-21-17-38-21.mp4",
-  "/videos/thousand-edits/03-whatsapp-2026-11-21-17-45-44.mp4",
-  "/videos/thousand-edits/04-whatsapp-2026-11-18-16-47-00.mp4",
-  "/videos/thousand-edits/05-accessaries-1.mp4",
-  "/videos/thousand-edits/06-outfut-4.mp4",
+  {
+    src: "/videos/thousand-edits/01-whatsapp-2026-11-21-17-52-13.mp4",
+    poster: "/videos/thousand-edits/posters/01-whatsapp-2026-11-21-17-52-13.jpg",
+  },
+  {
+    src: "/videos/thousand-edits/02-whatsapp-2026-11-21-17-38-21.mp4",
+    poster: "/videos/thousand-edits/posters/02-whatsapp-2026-11-21-17-38-21.jpg",
+  },
+  {
+    src: "/videos/thousand-edits/03-whatsapp-2026-11-21-17-45-44.mp4",
+    poster: "/videos/thousand-edits/posters/03-whatsapp-2026-11-21-17-45-44.jpg",
+  },
+  {
+    src: "/videos/thousand-edits/04-whatsapp-2026-11-18-16-47-00.mp4",
+    poster: "/videos/thousand-edits/posters/04-whatsapp-2026-11-18-16-47-00.jpg",
+  },
+  {
+    src: "/videos/thousand-edits/05-accessaries-1.mp4",
+    poster: "/videos/thousand-edits/posters/05-accessaries-1.jpg",
+  },
+  {
+    src: "/videos/thousand-edits/06-outfut-4.mp4",
+    poster: "/videos/thousand-edits/posters/06-outfut-4.jpg",
+  },
 ];
 
-const VideoTile = ({ src }) => {
+const getVideoSrc = (item) => (typeof item === "string" ? item : item?.src);
+const getVideoPoster = (item) => (typeof item === "string" ? undefined : item?.poster);
+
+const VideoTile = ({ src, poster, index = 0 }) => {
   const videoRef = useRef(null);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !src) return;
 
     let loaded = false;
+    let loadTimer;
+
     const startPreview = () => {
-      if (!loaded) {
+      if (loaded) {
+        video.play().catch(() => {});
+        return;
+      }
+      loadTimer = window.setTimeout(() => {
+        if (loaded) return;
         video.src = src;
         video.load();
         loaded = true;
-      }
-      video.play().catch(() => {});
+        video.play().catch(() => {});
+      }, Math.min(index, 5) * 200);
     };
-    const stopPreview = () => video.pause();
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) startPreview();
-      else stopPreview();
-    }, { threshold: 0.15, rootMargin: "120px" });
+    const stopPreview = () => {
+      if (loadTimer) {
+        window.clearTimeout(loadTimer);
+        loadTimer = undefined;
+      }
+      video.pause();
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) startPreview();
+        else stopPreview();
+      },
+      { threshold: 0.2, rootMargin: "0px" }
+    );
 
     observer.observe(video);
     return () => {
@@ -42,7 +80,7 @@ const VideoTile = ({ src }) => {
       video.removeAttribute("src");
       video.load();
     };
-  }, [src]);
+  }, [src, index]);
 
   return (
     <div className="tile">
@@ -52,8 +90,8 @@ const VideoTile = ({ src }) => {
           muted
           loop
           playsInline
-          autoPlay
           preload="none"
+          poster={poster}
           className="tile-video"
           aria-label="Silent looping video preview"
         />
@@ -200,9 +238,11 @@ export default function TileReveal({
     >
       <div ref={stickyRef} className="reveal-sticky">
         <div ref={gridRef} className="tile-grid">
-          {tileSources.slice(0, 6).map((src, i) => (
-            <VideoTile key={src || i} src={src} index={i} />
-          ))}
+          {tileSources.slice(0, 6).map((item, i) => {
+            const src = getVideoSrc(item);
+            const poster = getVideoPoster(item);
+            return <VideoTile key={src || i} src={src} poster={poster} index={i} />;
+          })}
         </div>
 
         <div ref={headlineRef} className="reveal-center">
