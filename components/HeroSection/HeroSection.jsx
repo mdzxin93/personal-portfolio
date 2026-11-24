@@ -13,11 +13,11 @@ const HeroSection = () => {
     document.body.style.overflow = "hidden";
 
     const progressFrame = requestAnimationFrame(() => setProgressStarted(true));
-    const revealTimer = setTimeout(() => setIsRevealed(true), 3200);
+    const revealTimer = setTimeout(() => setIsRevealed(true), 3000);
     const completeTimer = setTimeout(() => {
       setLoaderDone(true);
       document.body.style.overflow = "";
-    }, 4000);
+    }, 3800);
 
     return () => {
       cancelAnimationFrame(progressFrame);
@@ -88,7 +88,8 @@ const HeroSection = () => {
               fill
               priority
               fetchPriority="high"
-              quality={95}
+              unoptimized
+              quality={100}
               sizes="(max-width: 640px) 174px, 194px"
               className="object-cover object-[center_28%]"
             />
@@ -115,7 +116,7 @@ const HeroSection = () => {
               className="loader-progress-fill h-full w-full origin-left rounded-full bg-[#F5F1EA]"
               style={{
                 transform: progressStarted ? "scaleX(1)" : "scaleX(0)",
-                transition: "transform 2800ms cubic-bezier(0.22, 1, 0.36, 1)",
+                transition: "transform 2600ms cubic-bezier(0.22, 1, 0.36, 1)",
               }}
             />
           </div>
@@ -140,7 +141,7 @@ const HeroSection = () => {
           style={{
             opacity: isRevealed ? 1 : 0,
             transform: isRevealed ? "scale(1)" : "scale(1.05)",
-            transition: "opacity 900ms ease, transform 900ms ease",
+            transition: "opacity 800ms ease, transform 800ms ease",
           }}
         >
           <Image
