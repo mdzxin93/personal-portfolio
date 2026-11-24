@@ -7,24 +7,27 @@ const MenuButton = () => {
   const offset = 10;
 
   const [dots, dotsApi] = useSpring(() => ({
-    from: { transform: `rotate(0deg)` },
+    from: { transform: "rotate(0deg)" },
+    to: { transform: "rotate(0deg)" },
   }));
 
   const handleMouseEnter = () => {
-    dotsApi.start({ transform: `rotate(90deg)` });
+    dotsApi.start({ transform: "rotate(90deg)" });
   };
   const handleMouseLeave = () => {
     if (!isOpen) {
-      dotsApi.start({ transform: `rotate(0deg)` });
+      dotsApi.start({ transform: "rotate(0deg)" });
     }
   };
 
   const [menu, menuApi] = useSpring(() => ({
     from: { y: offset, opacity: 1 },
+    to: { y: offset, opacity: 1 },
   }));
 
   const [close, closeApi] = useSpring(() => ({
     from: { y: offset, opacity: 0 },
+    to: { y: offset, opacity: 0 },
   }));
 
   const handleClick = () => {

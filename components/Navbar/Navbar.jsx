@@ -46,7 +46,8 @@ import { usePathname } from "next/navigation";
 function Navbar() {
   const pathname = usePathname();
   const [rotate, setRotate] = useSpring(() => ({
-    transform: `rotate(0deg)`,
+    from: { transform: "rotate(0deg)" },
+    to: { transform: "rotate(0deg)" },
     config: { tension: 300, friction: 20, mass: 1 },
   }));
 

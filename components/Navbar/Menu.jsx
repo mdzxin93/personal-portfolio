@@ -46,10 +46,12 @@ const Menu = ({ open, onOutsideClick, onClose }) => {
 
   const [contents, contentsApi] = useSpring(() => ({
     from: { y: 100, opacity: 0, transform: "rotate(20deg)" },
+    to: { y: 100, opacity: 0, transform: "rotate(20deg)" },
   }));
 
   const [news, newsApi] = useSpring(() => ({
     from: { y: 100, opacity: 0, transform: "rotate(-20deg)" },
+    to: { y: 100, opacity: 0, transform: "rotate(-20deg)" },
   }));
   const [isMounted, setIsMounted] = useState(open);
   useEffect(() => {
