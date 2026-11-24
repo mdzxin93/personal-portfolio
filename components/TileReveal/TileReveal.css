@@ -5,6 +5,8 @@
   background-color: var(--color-bg);
   color: var(--color-text);
   overflow: visible;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 1000px;
 }
 
 .reveal-sticky {
@@ -42,6 +44,16 @@
   transform-origin: center;
   pointer-events: auto;
   cursor: pointer;
+  opacity: 0;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.reveal-scroll.is-static .tile {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
 }
 
 .tile-inner {
@@ -54,6 +66,7 @@
   border: 1px solid var(--color-border);
   background-color: #000000;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+  transform: translateZ(0);
 }
 
 .tile:hover .tile-inner,
@@ -174,6 +187,11 @@
   justify-content: center;
   pointer-events: none;
   padding: 24px;
+  will-change: transform, opacity;
+}
+
+.reveal-scroll.is-static .reveal-center {
+  will-change: auto;
 }
 
 .reveal-center h1 {
@@ -242,6 +260,12 @@
   .tile {
     aspect-ratio: 0.85;
     border-radius: 16px;
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+  .reveal-center {
+    will-change: auto;
   }
   .reveal-center h1 {
     font-size: clamp(38px, 9.5vw, 60px);
@@ -256,6 +280,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .tile {
+    opacity: 1 !important;
+    transform: none !important;
+    will-change: auto;
+  }
+  .reveal-center {
+    opacity: 1 !important;
+    transform: none !important;
     will-change: auto;
   }
   .arrow {

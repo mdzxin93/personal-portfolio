@@ -33,28 +33,31 @@ const DEFAULT_VIDEOS = [
 const getVideoSrc = (item) => (typeof item === "string" ? item : item?.src);
 const getVideoPoster = (item) => (typeof item === "string" ? undefined : item?.poster);
 
-const VideoTile = ({ src, poster, index = 0 }) => {
+const VideoTile = ({ src, poster, index = 0, canLoad = false }) => {
   const videoRef = useRef(null);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !src) return;
+    if (!video || !src || !canLoad) return;
 
     let loaded = false;
     let loadTimer;
+    let cancelled = false;
 
     const startPreview = () => {
+      if (cancelled) return;
       if (loaded) {
         video.play().catch(() => {});
         return;
       }
       loadTimer = window.setTimeout(() => {
-        if (loaded) return;
+        if (cancelled || loaded) return;
         video.src = src;
+        video.preload = "metadata";
         video.load();
         loaded = true;
         video.play().catch(() => {});
-      }, Math.min(index, 5) * 200);
+      }, Math.min(index, 5) * 180);
     };
 
     const stopPreview = () => {
@@ -70,17 +73,19 @@ const VideoTile = ({ src, poster, index = 0 }) => {
         if (entry.isIntersecting) startPreview();
         else stopPreview();
       },
-      { threshold: 0.2, rootMargin: "0px" }
+      { threshold: 0.15, rootMargin: "0px" }
     );
 
     observer.observe(video);
     return () => {
+      cancelled = true;
       observer.disconnect();
       stopPreview();
+      video.pause();
       video.removeAttribute("src");
       video.load();
     };
-  }, [src, index]);
+  }, [src, index, canLoad]);
 
   return (
     <div className="tile">
@@ -92,6 +97,7 @@ const VideoTile = ({ src, poster, index = 0 }) => {
           playsInline
           preload="none"
           poster={poster}
+          disablePictureInPicture
           className="tile-video"
           aria-label="Silent looping video preview"
         />
@@ -118,6 +124,8 @@ export default function TileReveal({
   const progressRef = useRef(null);
   const gridRef = useRef(null);
   const headlineRef = useRef(null);
+  const [canLoadVideos, setCanLoadVideos] = useState(false);
+  const [isStatic, setIsStatic] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -134,12 +142,13 @@ export default function TileReveal({
       "(max-width: 768px), (prefers-reduced-motion: reduce)"
     ).matches;
     if (useStaticReveal) {
+      setIsStatic(true);
+      setCanLoadVideos(true);
       if (progressRef.current) progressRef.current.textContent = "100 / 100";
       return;
     }
 
     let cancelled = false;
-    let refreshTimer;
     let ctx;
 
     const loadScrollAnimation = async () => {
@@ -151,56 +160,61 @@ export default function TileReveal({
 
       gsap.registerPlugin(ScrollTrigger);
       ctx = gsap.context(() => {
-        const getW = () => window.innerWidth;
-        const getH = () => window.innerHeight;
         const entranceMultipliers = [
-          { x: -0.65, y: -1.15 },
-          { x: 0, y: -1.15 },
-          { x: 0.65, y: -1.15 },
-          { x: -0.65, y: 1.15 },
-          { x: 0, y: 1.15 },
-          { x: 0.65, y: 1.15 },
+          { x: -70, y: -120 },
+          { x: 0, y: -120 },
+          { x: 70, y: -120 },
+          { x: -70, y: 120 },
+          { x: 0, y: 120 },
+          { x: 70, y: 120 },
         ];
 
-        tiles.forEach((tile, i) => {
-          const m = entranceMultipliers[i] || { x: 0, y: 0 };
-          gsap.set(tile, {
-            x: m.x * getW(),
-            y: m.y * getH(),
-            scale: 0.85,
-            opacity: 0,
-          });
+        gsap.set(tiles, {
+          opacity: 0,
+          scale: 0.9,
+          xPercent: (i) => (entranceMultipliers[i] || { x: 0 }).x,
+          yPercent: (i) => (entranceMultipliers[i] || { y: 0 }).y,
+          force3D: true,
         });
 
         if (headlineRef.current) {
-          gsap.set(headlineRef.current, { opacity: 0.35, scale: 0.94 });
+          gsap.set(headlineRef.current, {
+            opacity: 0.2,
+            scale: 0.96,
+            yPercent: 8,
+            force3D: true,
+          });
         }
 
         const timeline = gsap.timeline({
+          defaults: { ease: "power3.out", force3D: true },
           scrollTrigger: {
             trigger: section,
-            start: "top 70%",
+            start: "top 75%",
             once: true,
           },
           onComplete: () => {
             if (progressRef.current) progressRef.current.textContent = "100 / 100";
+            setCanLoadVideos(true);
+            gsap.set([tiles, headlineRef.current].filter(Boolean), {
+              clearProps: "willChange",
+            });
           },
         });
 
-        tiles.forEach((tile, i) => {
-          timeline.to(
-            tile,
-            {
-              x: 0,
-              y: 0,
-              scale: 1,
-              opacity: 1,
-              ease: "power2.out",
-              duration: 0.7,
-            },
-            i * 0.045
-          );
-        });
+        timeline.to(
+          tiles,
+          {
+            xPercent: 0,
+            yPercent: 0,
+            scale: 1,
+            opacity: 1,
+            duration: 0.9,
+            stagger: 0.06,
+            ease: "power3.out",
+          },
+          0
+        );
 
         if (headlineRef.current) {
           timeline.to(
@@ -208,24 +222,24 @@ export default function TileReveal({
             {
               opacity: 1,
               scale: 1,
+              yPercent: 0,
+              duration: 0.7,
               ease: "power2.out",
-              duration: 0.65,
             },
-            0.12
+            0.1
           );
         }
-
-        refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 200);
       }, section);
     };
 
     loadScrollAnimation().catch(() => {
       // The visible static layout remains available if the optional animation fails.
+      setCanLoadVideos(true);
+      setIsStatic(true);
     });
 
     return () => {
       cancelled = true;
-      clearTimeout(refreshTimer);
       if (ctx) ctx.revert();
     };
   }, [scrollDistance]);
@@ -233,7 +247,7 @@ export default function TileReveal({
   return (
     <section
       ref={sectionRef}
-      className="reveal-scroll"
+      className={`reveal-scroll${isStatic ? " is-static" : ""}`}
       aria-label="Animated tile reveal"
     >
       <div ref={stickyRef} className="reveal-sticky">
@@ -241,7 +255,15 @@ export default function TileReveal({
           {tileSources.slice(0, 6).map((item, i) => {
             const src = getVideoSrc(item);
             const poster = getVideoPoster(item);
-            return <VideoTile key={src || i} src={src} poster={poster} index={i} />;
+            return (
+              <VideoTile
+                key={src || i}
+                src={src}
+                poster={poster}
+                index={i}
+                canLoad={canLoadVideos}
+              />
+            );
           })}
         </div>
 
