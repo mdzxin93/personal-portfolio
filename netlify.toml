@@ -1,4 +1,4 @@
-﻿# Netlify configuration
+# Netlify configuration
 # Cache optimized tile-reveal videos and posters aggressively (filenames are content-specific)
 [[headers]]
   for = "/videos/thousand-edits/*"
