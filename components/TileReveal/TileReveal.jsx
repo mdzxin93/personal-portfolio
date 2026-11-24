@@ -4,12 +4,12 @@ import React, { useEffect, useRef, useState } from "react";
 import "./TileReveal.css";
 
 const DEFAULT_VIDEOS = [
-  "/5302277_Vertical_Video_Vertical_Content_720x1280.mp4",
-  "/6308879_Vertical_Video_Vertical_Content_720x1280.mp4",
-  "/10619138-uhd_2160_4096_25fps.mp4",
-  "/12155762_1080_1920_60fps.mp4",
-  "/14547644_1080_1920_30fps.mp4",
-  "/15410984_2160_3840_60fps%20(1).mp4",
+  "/videos/thousand-edits/01-whatsapp-2026-11-21-17-52-13.mp4",
+  "/videos/thousand-edits/02-whatsapp-2026-11-21-17-38-21.mp4",
+  "/videos/thousand-edits/03-whatsapp-2026-11-21-17-45-44.mp4",
+  "/videos/thousand-edits/04-whatsapp-2026-11-18-16-47-00.mp4",
+  "/videos/thousand-edits/05-accessaries-1.mp4",
+  "/videos/thousand-edits/06-outfut-4.mp4",
 ];
 
 const VideoTile = ({ src }) => {
