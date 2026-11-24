@@ -13,11 +13,11 @@ const HeroSection = () => {
     document.body.style.overflow = "hidden";
 
     const progressFrame = requestAnimationFrame(() => setProgressStarted(true));
-    const revealTimer = setTimeout(() => setIsRevealed(true), 2600);
+    const revealTimer = setTimeout(() => setIsRevealed(true), 1600);
     const completeTimer = setTimeout(() => {
       setLoaderDone(true);
       document.body.style.overflow = "";
-    }, 3400);
+    }, 2000);
 
     return () => {
       cancelAnimationFrame(progressFrame);
@@ -66,7 +66,7 @@ const HeroSection = () => {
           alignItems: "center",
           justifyContent: "center",
           transform: isRevealed ? "translateY(-100%)" : "translateY(0)",
-          transition: "transform 800ms cubic-bezier(0.76, 0, 0.24, 1)",
+          transition: "transform 400ms cubic-bezier(0.76, 0, 0.24, 1)",
         }}
       >
         <div
@@ -116,7 +116,7 @@ const HeroSection = () => {
               className="loader-progress-fill h-full w-full origin-left rounded-full bg-[#F5F1EA]"
               style={{
                 transform: progressStarted ? "scaleX(1)" : "scaleX(0)",
-                transition: "transform 2600ms cubic-bezier(0.22, 1, 0.36, 1)",
+                transition: "transform 1600ms cubic-bezier(0.22, 1, 0.36, 1)",
               }}
             />
           </div>
