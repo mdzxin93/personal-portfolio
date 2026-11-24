@@ -11,17 +11,17 @@ const EMAIL = "mohammedkhasiminfo@gmail.com";
 const LetsTalk = () => {
   const [springs, api] = useSpring(() => ({
     from: { x: 0 },
-    x: -10,
+    to: { x: 0 },
   }));
 
   const [opacitySprings, opacityApi] = useSpring(() => ({
-    opacity: 1,
-    x: 0,
+    from: { opacity: 1, x: 0 },
+    to: { opacity: 1, x: 0 },
   }));
 
   const [opacitySpringsReverse, opacityApiReverse] = useSpring(() => ({
-    opacity: 0,
-    x: -10,
+    from: { opacity: 0, x: -10 },
+    to: { opacity: 0, x: -10 },
   }));
 
   const handleClick = (e) => {
