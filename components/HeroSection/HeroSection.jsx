@@ -13,11 +13,11 @@ const HeroSection = () => {
     document.body.style.overflow = "hidden";
 
     const progressFrame = requestAnimationFrame(() => setProgressStarted(true));
-    const revealTimer = setTimeout(() => setIsRevealed(true), 400);
+    const revealTimer = setTimeout(() => setIsRevealed(true), 200);
     const completeTimer = setTimeout(() => {
       setLoaderDone(true);
       document.body.style.overflow = "";
-    }, 1250);
+    }, 750);
 
     return () => {
       cancelAnimationFrame(progressFrame);
@@ -66,7 +66,7 @@ const HeroSection = () => {
           alignItems: "center",
           justifyContent: "center",
           transform: isRevealed ? "translateY(-100%)" : "translateY(0)",
-          transition: "transform 550ms cubic-bezier(0.76, 0, 0.24, 1)",
+          transition: "transform 300ms cubic-bezier(0.76, 0, 0.24, 1)",
         }}
       >
         <div
@@ -114,7 +114,7 @@ const HeroSection = () => {
               className="loader-progress-fill h-full w-full origin-left rounded-full bg-[#F5F1EA]"
               style={{
                 transform: progressStarted ? "scaleX(1)" : "scaleX(0)",
-                transition: "transform 950ms linear",
+                transition: "transform 450ms linear",
               }}
             />
           </div>
@@ -139,7 +139,7 @@ const HeroSection = () => {
           style={{
             opacity: isRevealed ? 1 : 0,
             transform: isRevealed ? "scale(1)" : "scale(1.05)",
-            transition: "opacity 550ms ease, transform 550ms ease",
+            transition: "opacity 300ms ease, transform 300ms ease",
           }}
         >
           <Image
