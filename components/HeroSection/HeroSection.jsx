@@ -13,11 +13,11 @@ const HeroSection = () => {
     document.body.style.overflow = "hidden";
 
     const progressFrame = requestAnimationFrame(() => setProgressStarted(true));
-    const revealTimer = setTimeout(() => setIsRevealed(true), 3000);
+    const revealTimer = setTimeout(() => setIsRevealed(true), 2600);
     const completeTimer = setTimeout(() => {
       setLoaderDone(true);
       document.body.style.overflow = "";
-    }, 3800);
+    }, 3400);
 
     return () => {
       cancelAnimationFrame(progressFrame);
@@ -140,8 +140,8 @@ const HeroSection = () => {
           className="absolute inset-x-3 top-[76px] bottom-3 w-auto h-auto z-0 overflow-hidden bg-black rounded-[28px] border-[6px] border-[#242424] shadow-[0_16px_44px_rgba(0,0,0,0.28)] lg:inset-0 lg:w-full lg:h-full lg:rounded-none lg:border-0 lg:shadow-none"
           style={{
             opacity: isRevealed ? 1 : 0,
-            transform: isRevealed ? "scale(1)" : "scale(1.05)",
-            transition: "opacity 800ms ease, transform 800ms ease",
+            transform: "scale(1)",
+            transition: "none",
           }}
         >
           <Image
